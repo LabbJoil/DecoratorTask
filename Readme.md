@@ -50,11 +50,17 @@ ITask - это интерфейс, который определяет общие атрибуты и методы для всех класс
 ## Примеры использования
 
 ```csharp
+
+using DecoratorTask.Decorators;
+using DecoratorTask.Entities;
+using DecoratorTask.Enums;
+using DecoratorTask.Interfaces;
+
 // Создание базовой задачи
-ITask task = new BasicTask("Новая задача", "Описание задачи");
+ITask task = new BasicTask("My Task", "description about my task", State.InProcess);
 
-// Добавление приоритета к задаче
-task = new PriorityTask(task, isPriority: true);
+// Добавление дополнительных атрибутов к задаче
+task = new CustomTask(task, Priority.Priority);
 
-// Добавление дедлайна к задаче
-task = new DataComplete(task, "30", "09", "2023");
+// Добавление дедлайна к задаче и частоты повторений
+task = new ExecutionDate(task, Repeat.Everyday, DateTime.Now.AddHours(3), DateTime.Now.AddHours(6));
