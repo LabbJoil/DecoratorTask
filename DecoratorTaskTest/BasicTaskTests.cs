@@ -70,15 +70,15 @@ namespace DecoratorTaskTest
         {
             // Arrange
             ITask basicTask = new BasicTask();
-            ITask customTask = new CustomTask(new BasicTask());
+            ITask customTask = new CustomTask(ref basicTask);
 
             // Act
             customTask.DeleateTask(ref customTask);
 
             // Act & Assert
-            Assert.ThrowsException<Exception>(() => basicTask.DeleateTask(ref customTask));
             Assert.ThrowsException<NullReferenceException>(() => customTask.DeleateTask(ref basicTask));
             Assert.AreEqual(customTask, null);
+            Assert.AreEqual(basicTask, null);
         }
 
         [TestMethod]
@@ -93,18 +93,19 @@ namespace DecoratorTaskTest
 
             // Assert
             Assert.IsFalse(BasicTask.AllTask.Contains(oldTask));
-            Assert.IsTrue(BasicTask.AllTask.Contains(newTask));
+            Assert.IsTrue(BasicTask.AllTask.Contains(newTask)); ///////////////////////////////////
         }
 
         [TestMethod]
         public void ChangeTask_NonExistentOldTask_ThrowsException()
         {
             // Arrange
-            BasicTask oldTask = new();
-            CustomTask newTask = new(oldTask);
+            ITask oldTask = new BasicTask();
+            CustomTask newTask = new (ref oldTask);
 
             // Act & Assert
             Assert.ThrowsException<Exception>(() => newTask.ChangeTask(oldTask, newTask));
+            Assert.AreEqual(oldTask, null);
         }
 
         [TestMethod]

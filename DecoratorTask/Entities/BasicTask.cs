@@ -51,7 +51,7 @@ namespace DecoratorTask.Entities
         public void ChangeTask(ITask lastTask, ITask newTask)
         {
             if (!AllTask.Remove(lastTask)) 
-                throw new Exception("Объекта не существует");
+                throw new Exception("Объекта не существует или уже используется в другой задаче.");
             AllTask.Add(newTask);
         }        
     }

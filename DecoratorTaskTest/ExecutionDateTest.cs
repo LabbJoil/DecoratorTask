@@ -13,7 +13,6 @@ namespace DecoratorTaskTest
     [TestClass]
     public class ExecutionDateTest
     {
-        private readonly ITask TestTask = new BasicTask();
         private readonly DateTime StartDate = DateTime.ParseExact(string.Join(".", new string[] { "10", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
         private readonly DateTime EndDate = DateTime.ParseExact(string.Join(".", new string[] { "16", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
@@ -28,7 +27,8 @@ namespace DecoratorTaskTest
             DateTime dateEndTask = dateStartTask.AddHours(1);
 
             // Act
-            ExecutionDate executionDate = new(TestTask);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask);
 
             // Assert
             Assert.AreEqual(dateStartTask.Hour, executionDate.DateStartTask.Hour);
@@ -45,7 +45,8 @@ namespace DecoratorTaskTest
             DateTime endDate = DateTime.ParseExact(string.Join(".", new string[] { "16", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
             // Act
-            ExecutionDate executionDate = new(TestTask, repeat, startDate, endDate);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, repeat, startDate, endDate);
 
             // Assert
             Assert.AreEqual(DateTime.ParseExact("10.10.2050 14:30", "d.M.yyyy HH:mm", null), executionDate.DateStartTask);
@@ -60,10 +61,11 @@ namespace DecoratorTaskTest
         {
             // Arrange
             Repeat repeat = Repeat.Everyday;
+            ITask basicTask = new BasicTask();
 
-            // Act
+            // Act & Assert
             Assert.ThrowsException<Exception>(() 
-                => new ExecutionDate(TestTask, repeat, StartDate, EndDate));
+                => new ExecutionDate(ref basicTask, repeat, StartDate, EndDate));
         }
 
         [TestMethod]
@@ -73,8 +75,9 @@ namespace DecoratorTaskTest
             Repeat repeat = Repeat.None;
             DateTime IncorrectStartDate = DateTime.ParseExact(string.Join(".", new string[] { "17", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
-            // Act
-            Assert.ThrowsException<Exception>(() => new ExecutionDate(TestTask, repeat, IncorrectStartDate, EndDate));
+            // Act & Assert
+            ITask basicTask = new BasicTask();
+            Assert.ThrowsException<Exception>(() => new ExecutionDate(ref basicTask, repeat, IncorrectStartDate, EndDate));
         }
 
         [TestMethod]
@@ -84,8 +87,9 @@ namespace DecoratorTaskTest
             Repeat repeat = Repeat.None;
             DateTime IncorrectEndDate = DateTime.ParseExact(string.Join(".", new string[] { "09", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
-            // Act
-            Assert.ThrowsException<Exception>(() => new ExecutionDate(TestTask, repeat, StartDate, IncorrectEndDate));
+            // Act & Assert
+            ITask basicTask = new BasicTask();
+            Assert.ThrowsException<Exception>(() => new ExecutionDate(ref basicTask, repeat, StartDate, IncorrectEndDate));
         }
 
         [TestMethod]
@@ -93,10 +97,11 @@ namespace DecoratorTaskTest
         {
             // Arrange
             Repeat repeat = Repeat.None;
+            ITask basicTask = new BasicTask();
             DateTime IncorrectEndDate = DateTime.ParseExact(string.Join(".", new string[] { "09", "09", "2012", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
-            // Act
-            Assert.ThrowsException<Exception>(() => new ExecutionDate(TestTask, repeat, StartDate, IncorrectEndDate));
+            // Act & Assert
+            Assert.ThrowsException<Exception>(() => new ExecutionDate(ref basicTask, repeat, StartDate, IncorrectEndDate));
         }
 
         //-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -105,7 +110,8 @@ namespace DecoratorTaskTest
         public void ChangeDateStart_ValidInput()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask, Repeat.None, StartDate, EndDate);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
             DateTime newStartDate = DateTime.ParseExact(string.Join(".", new string[] { "15", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
 
             // Act
@@ -119,7 +125,8 @@ namespace DecoratorTaskTest
         public void ChangeDateEnd_ValidInput()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask, Repeat.None, StartDate, EndDate);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
             DateTime newEndDate = DateTime.ParseExact(string.Join(".", new string[] { "30", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
             // Act
@@ -133,7 +140,8 @@ namespace DecoratorTaskTest
         public void ChangeRepeat_ValidInput()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask, Repeat.None, StartDate, EndDate);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
             Repeat repeat = Repeat.EveryMonth;
 
             // Act
@@ -149,10 +157,11 @@ namespace DecoratorTaskTest
         public void ChangeDateStart_InValidInput_ThrowsException()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask, Repeat.None, StartDate, EndDate);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
             DateTime newStartDate = DateTime.ParseExact(string.Join(".", new string[] { "18", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
 
-            // Act
+            // Act & Assert
             Assert.ThrowsException<Exception>(() => executionDate.ChangeDateStart(newStartDate));
         }
 
@@ -160,10 +169,11 @@ namespace DecoratorTaskTest
         public void ChangeDateEnd_InValidInput_ThrowsException()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask, Repeat.None, StartDate, EndDate);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
             DateTime newEndDate = DateTime.ParseExact(string.Join(".", new string[] { "9", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
-            // Act
+            // Act & Assert
             Assert.ThrowsException<Exception>(() => executionDate.ChangeDateEnd(newEndDate));
         }
 
@@ -171,10 +181,11 @@ namespace DecoratorTaskTest
         public void ChangeRepeat_InValidInput_ThrowsException()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask, Repeat.None, StartDate, EndDate);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
             Repeat repeat = Repeat.Everyday;
 
-            // Act
+            // Act & Assert
             Assert.ThrowsException<Exception>(() => executionDate.ChangeRepeat(repeat));
         }
 
@@ -184,7 +195,8 @@ namespace DecoratorTaskTest
         public void Checked_TaskIsExpectation()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask);
 
             // Act
             executionDate.Checked();
@@ -197,7 +209,8 @@ namespace DecoratorTaskTest
         public void Checked_TaskIsInProcess()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask);
             executionDate.ChangeDateStart(DateTime.Now);
 
             // Act
@@ -211,7 +224,8 @@ namespace DecoratorTaskTest
         public void Checked_TaskIsOverdue()
         {
             // Arrange
-            ExecutionDate executionDate = new(TestTask, Repeat.None, DateTime.Now, DateTime.Now);
+            ITask basicTask = new BasicTask();
+            ExecutionDate executionDate = new(ref basicTask, Repeat.None, DateTime.Now, DateTime.Now);
 
             // Act
             executionDate.Checked();

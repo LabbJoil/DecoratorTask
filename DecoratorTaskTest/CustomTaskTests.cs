@@ -12,42 +12,30 @@ namespace DecoratorTaskTest
     [TestClass]
     public class CustomTaskTests
     {
-        private static readonly ITask Task1 = new ExecutionDate(
-        new CustomTask(
-            new BasicTask("Task 1", "Description about task 1", State.Overdue),
-            Priority.Priority)
-        );
+        private static readonly ITask basicTask1 = new BasicTask("Task 1", "Description about task 1", State.Overdue);
+        private static readonly ITask executionDate1 = new CustomTask(ref basicTask1, Priority.Priority);
+        private static readonly ITask Task1 = new ExecutionDate(ref executionDate1);
 
-        private static readonly ITask Task2 = new CustomTask(
-            new ExecutionDate(
-                new BasicTask("Task 2", "Description about task 2", State.Expectation)),
-            Priority.Standard, true
-            );
+        private static readonly ITask basicTask2 = new BasicTask("Task 2", "Description about task 2", State.Expectation);
+        private static readonly ITask executionDate2 = new ExecutionDate(ref basicTask2);
+        private static readonly ITask Task2 = new CustomTask(ref executionDate2, Priority.Standard, true);
 
-        private static readonly ITask Task3 = new CustomTask(
-            new BasicTask("Task 3", "Description about task 3", State.InProcess),
-            Priority.NotNecessary, true
-            );
+        private static readonly ITask basicTask3 = new BasicTask("Task 3", "Description about task 3", State.InProcess);
+        private static readonly ITask Task3 = new CustomTask(ref basicTask3, Priority.NotNecessary, true);
 
-        private static readonly ITask Task4 = new ExecutionDate(
-            new CustomTask(
-                new BasicTask("Task 4", "Description about task 4", State.Overdue),
-                Priority.Priority
-                ),
-            Repeat.EveryWeek, 
+        private static readonly ITask basicTask4 = new BasicTask("Task 4", "Description about task 4", State.Overdue);
+        private static readonly ITask executionDate4 = new CustomTask(ref basicTask4, Priority.Priority);
+        private static readonly ITask Task4 = new ExecutionDate(ref executionDate4, Repeat.EveryWeek, 
             DateTime.ParseExact("21.10.2050.12.33", "d.M.yyyy.HH.mm", null), 
             DateTime.ParseExact(string.Join(".", new string[] { "25", "10", "2050", "12", "34" }), "d.M.yyyy.HH.mm", null)
             );
 
-        private static readonly ITask Task5 = new ExecutionDate(
-            new CustomTask(
-                new BasicTask("Task 5", "Description about task 5", State.Overdue),
-                Priority.Priority
-                ),
-            Repeat.EveryMonth, 
-            DateTime.ParseExact(string.Join(".", new string[] { "21", "10", "2050", "12", "33" }), "d.M.yyyy.HH.mm", null), 
+        private static readonly ITask basicTask5 = new BasicTask("Task 5", "Description about task 5", State.Overdue);
+        private static readonly ITask executionDate5 = new ExecutionDate(ref basicTask5, Repeat.EveryMonth,
+            DateTime.ParseExact(string.Join(".", new string[] { "21", "10", "2050", "12", "33" }), "d.M.yyyy.HH.mm", null),
             DateTime.ParseExact(string.Join(".", new string[] { "16", "11", "2050", "12", "34" }), "d.M.yyyy.HH.mm", null)
             );
+        private static readonly ITask Task5 = new CustomTask(ref executionDate5, Priority.Priority);
 
         private static readonly List<ITask> TestTasks = new() { Task1, Task2, Task3, Task4, Task5 };
 
@@ -61,7 +49,8 @@ namespace DecoratorTaskTest
             bool isArchived = false;
 
             // Act
-            CustomTask customTask = new(new BasicTask());
+            ITask basicTask = new BasicTask();
+            CustomTask customTask = new(ref basicTask);
 
             // Assert
             Assert.AreEqual(priorityTask, customTask.ConditionPriority);

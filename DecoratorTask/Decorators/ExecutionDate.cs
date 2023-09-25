@@ -10,7 +10,7 @@ namespace DecoratorTask.Decorators
         public DateTime DateEndTask { get; private set; }
         public Repeat OftenRepeat { get; private set; }
 
-        public ExecutionDate(ITask task) : base(task)
+        public ExecutionDate(ref ITask task) : base(task)
         {
             DateTime nowDateTime = DateTime.Now;
             DateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
@@ -21,7 +21,7 @@ namespace DecoratorTask.Decorators
             ChangeTask(task, this);
         }
 
-        public ExecutionDate(ITask task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
+        public ExecutionDate(ref ITask task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
         {
             DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
             if (dateStartTask < nowDate || dateEndTask < nowDate)
