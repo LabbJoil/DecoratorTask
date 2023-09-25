@@ -1,0 +1,184 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using DecoratorTask.Decorators;
+using DecoratorTask.Enriched;
+using DecoratorTask.Enums;
+using DecoratorTask.Interfaces;
+using DecoratorTask.Entities;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+
+namespace DecoratorTaskTest
+{
+    [TestClass]
+    public class CustomTaskTests
+    {
+        private static readonly ITask Task1 = new ExecutionDate(
+        new CustomTask(
+            new BasicTask("Task 1", "Description about task 1", State.Overdue),
+            Priority.Priority)
+        );
+
+        private static readonly ITask Task2 = new CustomTask(
+            new ExecutionDate(
+                new BasicTask("Task 2", "Description about task 2", State.Expectation)),
+            Priority.Standard, true
+            );
+
+        private static readonly ITask Task3 = new CustomTask(
+            new BasicTask("Task 3", "Description about task 3", State.InProcess),
+            Priority.NotNecessary, true
+            );
+
+        private static readonly ITask Task4 = new ExecutionDate(
+            new CustomTask(
+                new BasicTask("Task 4", "Description about task 4", State.Overdue),
+                Priority.Priority
+                ),
+            Repeat.EveryWeek, 
+            DateTime.ParseExact("21.10.2050.12.33", "d.M.yyyy.HH.mm", null), 
+            DateTime.ParseExact(string.Join(".", new string[] { "25", "10", "2050", "12", "34" }), "d.M.yyyy.HH.mm", null)
+            );
+
+        private static readonly ITask Task5 = new ExecutionDate(
+            new CustomTask(
+                new BasicTask("Task 5", "Description about task 5", State.Overdue),
+                Priority.Priority
+                ),
+            Repeat.EveryMonth, 
+            DateTime.ParseExact(string.Join(".", new string[] { "21", "10", "2050", "12", "33" }), "d.M.yyyy.HH.mm", null), 
+            DateTime.ParseExact(string.Join(".", new string[] { "16", "11", "2050", "12", "34" }), "d.M.yyyy.HH.mm", null)
+            );
+
+        private static readonly List<ITask> TestTasks = new() { Task1, Task2, Task3, Task4, Task5 };
+
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+        [TestMethod]
+        public void Constructor_DefaultValues()
+        {
+            // Arrange
+            Priority priorityTask = Priority.Standard;
+            bool isArchived = false;
+
+            // Act
+            CustomTask customTask = new(new BasicTask());
+
+            // Assert
+            Assert.AreEqual(priorityTask, customTask.ConditionPriority);
+            Assert.AreEqual(isArchived, customTask.IsArchived);
+        }
+
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+        [TestMethod]
+        public void FilterTasks_ByPriority_ReturnsMatchingTasks()
+        {
+            // Arrange
+            List<ITask> correctTasks = new() { Task1, Task4, Task5 };
+
+            // Act
+            List<ITask> filteredTasks = CustomTask.FilterTasksByStatus(TestTasks, Priority.Priority);
+
+            // Assert
+            Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
+            Assert.IsTrue(correctTasks.SequenceEqual(filteredTasks));
+        }
+
+        [TestMethod]
+        public void FilterTasks_ByState_ReturnsMatchingTasks()
+        {
+            // Arrange
+            List<ITask> correctTasks = new() { Task3 };
+
+            // Act
+            List<ITask> filteredTasks = CustomTask.FilterTasksByStatus(TestTasks, State.InProcess);
+
+            // Assert
+            Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
+            Assert.IsTrue(correctTasks.SequenceEqual(filteredTasks));
+        }
+
+        [TestMethod]
+        public void FilterTasks_ByIsArchived_ReturnsMatchingTasks()
+        {
+            // Arrange
+            List<ITask> correctTasks = new() { Task2, Task3 };
+
+            // Act
+            List<ITask> filteredTasks = CustomTask.FilterTasksByStatus(TestTasks, true);
+
+            // Assert
+            Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
+            Assert.IsTrue(correctTasks.SequenceEqual(filteredTasks));
+        }
+
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+        [TestMethod]
+        public void FilterTasks_ByStartDate_ReturnsMatchingTasks()
+        {
+            // Arrange
+            string[] masStartDate = new string[] { "21", "10", "2050", "12", "33" };
+            DateTime startDate = DateTime.ParseExact(string.Join(".", masStartDate), "d.M.yyyy.HH.mm", null);
+            List<ITask> correctTasks = new() { Task4, Task5 };
+
+            // Act
+            List<ITask> filteredTasks = CustomTask.FilterTasksByStartDate(TestTasks, startDate);
+
+            // Assert
+            Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
+            Assert.IsTrue(correctTasks.SequenceEqual(filteredTasks));
+        }
+
+        [TestMethod]
+        public void FilterTasks_ByEndDate_ReturnsMatchingTasks()
+        {
+            // Arrange
+            DateTime endDate = DateTime.Now.AddHours(2);
+            List<ITask> correctTasks = new() { Task1, Task2 };
+
+            // Act
+            List<ITask> filteredTasks = CustomTask.FilterTasksByEndDate(TestTasks, endDate);
+
+            // Assert
+            Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
+            Assert.IsTrue(correctTasks.SequenceEqual(filteredTasks));
+        }
+
+        [TestMethod]
+        public void FilterTasks_ByRepeatTask_ReturnsMatchingTasks()
+        {
+            // Arrange
+            Repeat oftenRepeat = Repeat.EveryMonth;
+            List<ITask> correctTasks = new() { Task5 };
+
+            // Act
+            List<ITask> filteredTasks = CustomTask.FilterTasksByRepeatTask(TestTasks, oftenRepeat);
+
+            // Assert
+            Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
+            Assert.IsTrue(correctTasks.SequenceEqual(filteredTasks));
+        }
+
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+        [TestMethod]
+        public void Info_ReturnsMatchingTasks()
+        {
+            // Arrange
+            DateTime nowDateTime = DateTime.Now;
+            DateTime dateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
+            DateTime dateEndTask = dateStartTask.AddHours(1);
+
+            string expectedInfoTask2 = $"Priority: Standard, Is Archived: True | " +
+                $"TimeStart: {dateStartTask}, TimeEnd: {dateEndTask}, OftenRepeat: None | " +
+                $"Id: {Task2.GetId()}, Titel: Task 2, Description: Description about task 2, State: Expectation | ";
+
+            // Act
+            string returnInfoTask2 = Task2.Info();
+
+            // Assert
+            Assert.IsTrue(expectedInfoTask2 == returnInfoTask2);
+        }
+    }
+}
