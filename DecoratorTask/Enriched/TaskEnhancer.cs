@@ -10,7 +10,7 @@ namespace DecoratorTask.Enriched
         public string Description { get => Task.Description; set => Task.Description = value; }
         public State StateTask { get => Task.StateTask; set => Task.StateTask = value; }
 
-        public TaskEnhancer(ITask task) => Task = task;
+        public TaskEnhancer(ITask? task) => Task = task ?? throw new Exception("Ссылка на задачу равна null");
 
         //-----------------------------------------------------------------------------------------------------------------------------------------------
 

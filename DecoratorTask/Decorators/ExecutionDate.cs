@@ -1,6 +1,7 @@
 ﻿using DecoratorTask.Enriched;
 using DecoratorTask.Enums;
 using DecoratorTask.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DecoratorTask.Decorators
 {
@@ -19,9 +20,10 @@ namespace DecoratorTask.Decorators
             OftenRepeat = Repeat.None;
             StateTask = State.Expectation;
             ChangeTask(task, this);
+            task = null;
         }
 
-        public ExecutionDate(ref ITask task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
+        public ExecutionDate(ref ITask? task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
         {
             DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
             if (dateStartTask < nowDate || dateEndTask < nowDate)
@@ -35,6 +37,7 @@ namespace DecoratorTask.Decorators
             OftenRepeat = oftenRepeat;
             StateTask = State.Expectation;
             ChangeTask(task, this);
+            task = null;
         }
 
         //-----------------------------------------------------------------------------------------------------------------------------------------------
