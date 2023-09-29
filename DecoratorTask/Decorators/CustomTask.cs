@@ -9,7 +9,7 @@ namespace DecoratorTask.Decorators
         public Priority ConditionPriority { get; set; }
         public bool IsArchived;
 
-        public CustomTask(ref ITask task, Priority conditionPriority = Priority.Standard, bool isArchived = false) : base(task)
+        public CustomTask(ref ITask? task, Priority conditionPriority = Priority.Standard, bool isArchived = false) : base(task)
         {
             ConditionPriority = conditionPriority;
             IsArchived = isArchived;

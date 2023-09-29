@@ -11,7 +11,7 @@ namespace DecoratorTask.Decorators
         public DateTime DateEndTask { get; private set; }
         public Repeat OftenRepeat { get; private set; }
 
-        public ExecutionDate(ref ITask task) : base(task)
+        public ExecutionDate(ref ITask? task) : base(task)
         {
             DateTime nowDateTime = DateTime.Now;
             DateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
@@ -26,10 +26,8 @@ namespace DecoratorTask.Decorators
         public ExecutionDate(ref ITask? task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
         {
             DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
-            if (dateStartTask < nowDate || dateEndTask < nowDate)
-                throw new Exception("Даты должны быть больше или равны сегодняшней дате");
-            else if (dateStartTask > dateEndTask)
-                throw new Exception("Дата начала должна быть меньше даты окончания");
+            if (dateEndTask < nowDate || dateStartTask > dateEndTask)
+                throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
 
             CheckCorrectStatusRepeat(oftenRepeat, dateStartTask, dateEndTask);
             DateStartTask = new DateTime(dateStartTask.Year, dateStartTask.Month, dateStartTask.Day, dateStartTask.Hour, dateStartTask.Minute, 0);
@@ -72,9 +70,8 @@ namespace DecoratorTask.Decorators
 
         public void ChangeDateStart(DateTime newDateStart)
         {
-            DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
-            if (newDateStart < nowDate || DateEndTask < newDateStart)
-                throw new Exception("Неправильно указана дата");
+            if (newDateStart > DateEndTask)
+                throw new Exception("Дата начала должна быть меньше даты окончания");
             CheckCorrectStatusRepeat(OftenRepeat, newDateStart, DateEndTask);
             StateTask = State.Expectation;
             DateStartTask = new DateTime(newDateStart.Year, newDateStart.Month, newDateStart.Day, newDateStart.Hour, newDateStart.Minute, 0);
@@ -82,8 +79,8 @@ namespace DecoratorTask.Decorators
 
         public void ChangeDateEnd(DateTime newDateEnd)
         {
-            if (newDateEnd < DateTime.Now || newDateEnd < DateStartTask) 
-                throw new Exception("Неправильно указана дата");
+            if (DateTime.Now > newDateEnd|| DateStartTask > newDateEnd) 
+                throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
             CheckCorrectStatusRepeat(OftenRepeat, newDateEnd, DateEndTask);
             DateEndTask = new DateTime(newDateEnd.Year, newDateEnd.Month, newDateEnd.Day, newDateEnd.Hour, newDateEnd.Minute, 0);
         }
@@ -102,6 +99,8 @@ namespace DecoratorTask.Decorators
 
             if (StateTask == State.Overdue)
             {
+                if (dateNow < DateStartTask)
+                    DateStartTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
                 if (dateNow < DateEndTask)
                     DateEndTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
                 return;

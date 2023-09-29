@@ -20,8 +20,8 @@ namespace DecoratorTask.Enriched
         public void DeleateTask(ref ITask deleteTask)
             => Task.DeleateTask(ref deleteTask);
 
-        public void ChangeTask(ITask lastTask, ITask newTask)
-            => Task.ChangeTask(lastTask, newTask);
+        public void ChangeTask(ITask? lastTask, ITask newTask)
+            => Task.ChangeTask(lastTask ?? throw new Exception("Ссылка на задачу равна null"), newTask);
 
     }
 }
