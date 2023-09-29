@@ -17,7 +17,7 @@ namespace DecoratorTask.Decorators
             task = null;
         }
 
-        public static List<ITask> FilterTasksByStatus(List<ITask> sourceList, Priority necessaryPriority)
+        public static List<ITask> FilterTasksByPriority(List<ITask> sourceList, Priority necessaryPriority)
         {
             List<ITask> filterListTask = new();
             foreach (ITask task in sourceList)
@@ -40,7 +40,7 @@ namespace DecoratorTask.Decorators
             return filterListTask;
         }
 
-        public static List<ITask> FilterTasksByStatus(List<ITask> sourceList, bool isArchived)
+        public static List<ITask> FilterTasksByIsArchived(List<ITask> sourceList, bool isArchived)
         {
             List<ITask> filterListTask = new();
             foreach (ITask task in sourceList)

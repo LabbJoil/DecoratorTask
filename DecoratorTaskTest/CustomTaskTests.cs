@@ -66,7 +66,7 @@ namespace DecoratorTaskTest
             List<ITask> correctTasks = new() { Task1, Task4, Task5 };
 
             // Act
-            List<ITask> filteredTasks = CustomTask.FilterTasksByStatus(TestTasks, Priority.Priority);
+            List<ITask> filteredTasks = CustomTask.FilterTasksByPriority(TestTasks, Priority.Priority);
 
             // Assert
             Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
@@ -94,7 +94,7 @@ namespace DecoratorTaskTest
             List<ITask> correctTasks = new() { Task2, Task3 };
 
             // Act
-            List<ITask> filteredTasks = CustomTask.FilterTasksByStatus(TestTasks, true);
+            List<ITask> filteredTasks = CustomTask.FilterTasksByIsArchived(TestTasks, true);
 
             // Assert
             Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
