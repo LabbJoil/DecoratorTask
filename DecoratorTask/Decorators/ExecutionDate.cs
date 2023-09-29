@@ -95,8 +95,15 @@ namespace DecoratorTask.Decorators
 
         public void Checked()
         {
-            if (StateTask == State.Overdue) return;
             DateTime dateNow = DateTime.Now;
+
+            if (StateTask == State.Overdue)
+            {
+                if (dateNow < DateEndTask)
+                    DateEndTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
+                return;
+            }
+                
             bool isNowTime = dateNow.TimeOfDay >= DateStartTask.TimeOfDay && dateNow.TimeOfDay <= DateEndTask.TimeOfDay;
 
             switch (OftenRepeat)

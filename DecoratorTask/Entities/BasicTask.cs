@@ -25,7 +25,7 @@ namespace DecoratorTask.Entities
             AllTask.Add(this);
         }
 
-        public BasicTask(string name, string description, State state)
+        public BasicTask(string name, string description, State state = State.Expectation)
         {
             Title = name;
             Description = description;
