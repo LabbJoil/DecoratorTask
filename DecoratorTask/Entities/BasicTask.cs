@@ -57,8 +57,8 @@ public class BasicTask : ITask
     }
 
     public void CompleteTask()
-        => StateTask = State.Complete;
+        => ChangeState(State.Complete);
 
-    void ITask.ChangeState(State newState)
+    public void ChangeState(State newState)
         => StateTask = newState;
 }
