@@ -10,6 +10,6 @@ namespace DecoratorTask.Enums
     {
         Expectation,
         InProcess,
-        Overdue
+        Complete
     }
 }

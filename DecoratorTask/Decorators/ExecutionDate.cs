@@ -1,150 +1,172 @@
 ﻿using DecoratorTask.Enriched;
 using DecoratorTask.Enums;
 using DecoratorTask.Interfaces;
-using System.Diagnostics.CodeAnalysis;
+using System.Data;
 
-namespace DecoratorTask.Decorators
-{
-    public class ExecutionDate : TaskEnhancer
-    { 
-        public DateTime DateStartTask { get; private set; }
-        public DateTime DateEndTask { get; private set; }
-        public Repeat OftenRepeat { get; private set; }
+namespace DecoratorTask.Decorators;
 
-        public ExecutionDate(ref ITask? task) : base(task)
+public class ExecutionDate : TaskEnhancer
+{ 
+    public DateTime DateStartTask { get; private set; }
+    public DateTime DateEndTask { get; private set; }
+    public Repeat OftenRepeat { get; private set; }
+
+    public ExecutionDate(ref ITask? task) : base(task)
+    {
+        DateTime nowDateTime = DateTime.Now;
+        DateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
+        DateEndTask = DateStartTask.AddHours(1);
+
+        OftenRepeat = Repeat.None;
+        ChangeTask(task, this);
+        Checked();
+        task = null;
+    }
+
+    public ExecutionDate(ref ITask? task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
+    {
+        DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
+        if (dateEndTask < nowDate || dateStartTask > dateEndTask)
+            throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
+
+        CheckCorrectStatusRepeat(oftenRepeat, dateStartTask, dateEndTask);
+        DateStartTask = new DateTime(dateStartTask.Year, dateStartTask.Month, dateStartTask.Day, dateStartTask.Hour, dateStartTask.Minute, 0);
+        DateEndTask = new DateTime(dateEndTask.Year, dateEndTask.Month, dateEndTask.Day, dateEndTask.Hour, dateEndTask.Minute, 0);
+        OftenRepeat = oftenRepeat;
+        ChangeTask(task, this);
+        Checked();
+        task = null;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+    public void ChangeDateStart(DateTime newDateStart)
+    {
+        if (newDateStart >= DateEndTask)
+            throw new Exception("Дата начала должна быть меньше даты окончания");
+        CheckCorrectStatusRepeat(OftenRepeat, newDateStart, DateEndTask);
+        DateStartTask = new DateTime(newDateStart.Year, newDateStart.Month, newDateStart.Day, newDateStart.Hour, newDateStart.Minute, 0);
+        Checked();
+    }
+
+    public void ChangeDateEnd(DateTime newDateEnd)
+    {
+        if (DateTime.Now > newDateEnd|| DateStartTask > newDateEnd) 
+            throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
+        CheckCorrectStatusRepeat(OftenRepeat, newDateEnd, DateEndTask);
+        DateEndTask = new DateTime(newDateEnd.Year, newDateEnd.Month, newDateEnd.Day, newDateEnd.Hour, newDateEnd.Minute, 0);
+    }
+
+    public void ChangeRepeat(Repeat oftenRepeat)
+    {
+        CheckCorrectStatusRepeat(oftenRepeat, DateStartTask, DateEndTask);
+        OftenRepeat = oftenRepeat;
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+    public override void CompleteTask()
+        => ChangeState(CalculateNextTaskDates());
+
+    public void Checked()
+    {
+        State stateTask = GetState();
+        DateTime dateNow = DateTime.Now;
+
+        if (dateNow >= DateStartTask && dateNow < DateEndTask)
+            stateTask = State.InProcess;
+        else if (dateNow < DateStartTask)
+            stateTask = State.Expectation;
+        else if (dateNow >= DateEndTask)
+            stateTask = State.Complete;
+
+        if (stateTask == State.Complete)
+            stateTask = CalculateNextTaskDates();
+        ChangeState(stateTask);
+    }
+
+    public override string Info()
+        => $"TimeStart: {DateStartTask}, TimeEnd: {DateEndTask}, OftenRepeat: {OftenRepeat} | " + Task.Info();
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+    private static void CheckCorrectStatusRepeat(Repeat repeat, DateTime dateStart, DateTime dateEnd)
+    {
+        switch (repeat)
         {
-            DateTime nowDateTime = DateTime.Now;
-            DateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
-            DateEndTask = DateStartTask.AddHours(1);
+            case Repeat.Everyday:
+                if ((dateEnd - dateStart).Days > 1)
+                    throw new Exception("Продолжительность задачи должна быть меньше или равна дню");
+                break;
 
-            OftenRepeat = Repeat.None;
-            StateTask = State.Expectation;
-            ChangeTask(task, this);
-            task = null;
+            case Repeat.EveryWeek:
+                if ((dateEnd - dateStart).Days > 7)
+                    throw new Exception("Продолжительность задачи должна быть меньше или равна недели");
+                break;
+
+            case Repeat.EveryMonth:
+                if ((dateEnd - dateStart).Days > DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+                    throw new Exception("Продолжительность задачи должна быть меньше или равна месяцу");
+                break;
+
+            case Repeat.EveryYear:
+                if ((dateEnd - dateStart).Days > DateTime.Now.DayOfYear)
+                    throw new Exception("Продолжительность задачи должна быть меньше или равна месяцу");
+                break;
         }
+    }
 
-        public ExecutionDate(ref ITask? task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
+    private State CalculateNextTaskDates()
+    {
+        State stateTask = State.Expectation;
+        DateTime dateNow = DateTime.Now;
+        DateTime nextDateStartTask, nextDateEndTask;
+        DateTime baseDate = dateNow > DateStartTask ? dateNow : DateStartTask;
+
+        switch (OftenRepeat)
         {
-            DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
-            if (dateEndTask < nowDate || dateStartTask > dateEndTask)
-                throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
+            case Repeat.Everyday:
+                int addDay = (baseDate.TimeOfDay > DateStartTask.TimeOfDay) ? 0 : 1;
+                nextDateStartTask = baseDate.AddDays(addDay);
+                nextDateEndTask = baseDate.AddDays(addDay);
 
-            CheckCorrectStatusRepeat(oftenRepeat, dateStartTask, dateEndTask);
-            DateStartTask = new DateTime(dateStartTask.Year, dateStartTask.Month, dateStartTask.Day, dateStartTask.Hour, dateStartTask.Minute, 0);
-            DateEndTask = new DateTime(dateEndTask.Year, dateEndTask.Month, dateEndTask.Day, dateEndTask.Hour, dateEndTask.Minute, 0);
-            OftenRepeat = oftenRepeat;
-            StateTask = State.Expectation;
-            ChangeTask(task, this);
-            task = null;
+                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
+                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
+                break;
+
+            case Repeat.EveryWeek:
+                int mainDay = (baseDate.DayOfWeek < DateStartTask.DayOfWeek) ? 0 : 7;
+                nextDateStartTask = baseDate.AddDays(mainDay - (int)baseDate.DayOfWeek + (int)DateStartTask.DayOfWeek);
+                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
+
+                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
+                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
+                break;
+
+            case Repeat.EveryMonth:
+                int addMonth = (baseDate.Day < DateStartTask.Day) ? 0 : 1;
+                nextDateStartTask = new DateTime(baseDate.Year, baseDate.AddMonths(addMonth).Month, 1);
+                nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
+                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
+
+                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
+                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
+                break;
+
+            case Repeat.EveryYear:
+                int addYear = (baseDate.DayOfYear < DateStartTask.DayOfYear) ? 0 : 1;
+                nextDateStartTask = new DateTime(baseDate.AddYears(addYear).Year, DateStartTask.Month, 1);
+                nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
+                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
+
+                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
+                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
+                break;
+
+            case Repeat.None:
+                stateTask = State.Complete;
+                break;
         }
-
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
-
-        private static void CheckCorrectStatusRepeat(Repeat repeat, DateTime dateStart, DateTime dateEnd)
-        {
-            switch (repeat)
-            {
-                case Repeat.Everyday:
-                    if ((dateEnd - dateStart).Days > 1)
-                        throw new Exception("Продолжительность задачи должна быть меньше или равна дню");
-                    break;
-
-                case Repeat.EveryWeek:
-                    if ((dateEnd - dateStart).Days > 7)
-                        throw new Exception("Продолжительность задачи должна быть меньше или равна недели");
-                    break;
-
-                case Repeat.EveryMonth:
-                    if ((dateEnd - dateStart).Days > DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
-                        throw new Exception("Продолжительность задачи должна быть меньше или равна месяцу");
-                    break;
-
-                case Repeat.EveryYear:
-                    if ((dateEnd - dateStart).Days > DateTime.Now.DayOfYear)
-                        throw new Exception("Продолжительность задачи должна быть меньше или равна месяцу");
-                    break;
-            }
-        }
-
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
-
-        public void ChangeDateStart(DateTime newDateStart)
-        {
-            if (newDateStart > DateEndTask)
-                throw new Exception("Дата начала должна быть меньше даты окончания");
-            CheckCorrectStatusRepeat(OftenRepeat, newDateStart, DateEndTask);
-            StateTask = State.Expectation;
-            DateStartTask = new DateTime(newDateStart.Year, newDateStart.Month, newDateStart.Day, newDateStart.Hour, newDateStart.Minute, 0);
-        }
-
-        public void ChangeDateEnd(DateTime newDateEnd)
-        {
-            if (DateTime.Now > newDateEnd|| DateStartTask > newDateEnd) 
-                throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
-            CheckCorrectStatusRepeat(OftenRepeat, newDateEnd, DateEndTask);
-            DateEndTask = new DateTime(newDateEnd.Year, newDateEnd.Month, newDateEnd.Day, newDateEnd.Hour, newDateEnd.Minute, 0);
-        }
-
-        public void ChangeRepeat(Repeat oftenRepeat)
-        {
-            CheckCorrectStatusRepeat(oftenRepeat, DateStartTask, DateEndTask);
-            OftenRepeat = oftenRepeat;
-        }
-
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
-
-        public void Checked()
-        {
-            DateTime dateNow = DateTime.Now;
-
-            if (StateTask == State.Overdue)
-            {
-                if (dateNow < DateStartTask)
-                    DateStartTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
-                if (dateNow < DateEndTask)
-                    DateEndTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
-                return;
-            }
-                
-            bool isNowTime = dateNow.TimeOfDay >= DateStartTask.TimeOfDay && dateNow.TimeOfDay <= DateEndTask.TimeOfDay;
-
-            switch (OftenRepeat)
-            {
-                case Repeat.Everyday:
-                    if (isNowTime)
-                        StateTask = State.InProcess;
-                    else StateTask = State.Expectation;
-                    break;
-
-                case Repeat.EveryWeek:
-                    if (isNowTime && (dateNow.DayOfWeek >= DateStartTask.DayOfWeek || dateNow.DayOfWeek <= DateEndTask.DayOfWeek))
-                        StateTask = State.InProcess;
-                    else StateTask = State.Expectation;
-                    break;
-
-                case Repeat.EveryMonth:
-                    if (isNowTime && (dateNow.Day >= DateStartTask.Day || dateNow.Day <= DateEndTask.Day))
-                        StateTask = State.InProcess;
-                    else StateTask = State.Expectation;
-                    break;
-
-                case Repeat.EveryYear:
-                    if (isNowTime && (dateNow.DayOfYear >= DateStartTask.DayOfYear || dateNow.DayOfYear <= DateEndTask.DayOfYear))
-                        StateTask = State.InProcess;
-                    else StateTask = State.Expectation;
-                    break;
-
-                case Repeat.None:
-                    if (dateNow >= DateStartTask && dateNow < DateEndTask)
-                        StateTask = State.InProcess;
-                    else if (dateNow < DateStartTask) StateTask = State.Expectation;
-                    else StateTask = State.Overdue;
-                    break;
-            }
-            
-        }
-
-        public override string Info()
-            => $"TimeStart: {DateStartTask}, TimeEnd: {DateEndTask}, OftenRepeat: {OftenRepeat} | " + Task.Info();
+        return stateTask;
     }
 }
