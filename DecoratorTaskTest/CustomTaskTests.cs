@@ -1,11 +1,7 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DecoratorTask.Decorators;
-using DecoratorTask.Enriched;
 using DecoratorTask.Enums;
 using DecoratorTask.Interfaces;
 using DecoratorTask.Entities;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace DecoratorTaskTest;
 

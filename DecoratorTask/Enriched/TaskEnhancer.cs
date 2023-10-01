@@ -2,6 +2,7 @@
 using DecoratorTask.Interfaces;
 
 namespace DecoratorTask.Enriched;
+
 public abstract class TaskEnhancer : ITask
 {
     public ITask Task;
