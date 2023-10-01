@@ -63,14 +63,14 @@ public class BasicTaskTests
     public void DeleateTask_NonExistentTask_ThrowsException()
     {
         // Arrange
-        ITask basicTask = new BasicTask();
-        ITask customTask = new CustomTask(ref basicTask);
+        ITask? basicTask = new BasicTask();
+        ITask? customTask = new CustomTask(ref basicTask);
 
         // Act
         customTask.DeleateTask(ref customTask);
 
         // Act & Assert
-        Assert.ThrowsException<NullReferenceException>(() => customTask.DeleateTask(ref basicTask));
+        Assert.ThrowsException<NullReferenceException>(() => customTask.DeleateTask(ref customTask));
         Assert.AreEqual(customTask, null);
         Assert.AreEqual(basicTask, null);
     }
@@ -87,14 +87,14 @@ public class BasicTaskTests
 
         // Assert
         Assert.IsFalse(BasicTask.AllTask.Contains(oldTask));
-        Assert.IsTrue(BasicTask.AllTask.Contains(newTask)); ///////////////////////////////////
+        Assert.IsTrue(BasicTask.AllTask.Contains(newTask));
     }
 
     [TestMethod]
     public void ChangeTask_NonExistentOldTask_ThrowsException()
     {
         // Arrange
-        ITask oldTask = new BasicTask();
+        ITask? oldTask = new BasicTask();
         CustomTask newTask = new (ref oldTask);
 
         // Act & Assert
