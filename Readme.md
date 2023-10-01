@@ -1,5 +1,4 @@
-
-# ƒекоратор дл€ задач в Visual Studio
+# ƒекоратор дл€ задач
 
 ƒанный проект в Visual Studio исследует применение паттерна "ƒекоратор" в €зыке программировани€ C# дл€ обогащени€ базовых задач различными атрибутами и дополнительной функциональностью. ќсновна€ цель проекта - показать, как можно расшир€ть функциональность базовых классов задач, дела€ их более гибкими и настраиваемыми.
 
@@ -16,9 +15,11 @@ BasicTask - это базовый класс, который представл€ет собой простую задачу. ќн вкл
 ќсновные методы BasicTask включают:
 
 - GetId() - получение уникального идентификатора задачи.
+- GetState() - получение текущего состо€ни€ задачи.
 - Info() - предоставление информации о задаче.
-- DeleteTask(ref ITask deleteTask) - удаление задачи.
-- ChangeTask(ITask lastTask, ITask newTask) - изменение задачи.
+- DeleateTask(ref ITask deleteTask) - удаление задачи.
+- CompleteTask() - пометка задачи как завершенной.
+- ChangeTask(ITask lastTask, ITask newTask) - изменение задачи в списке задач на более свежую.
 
 ### CustomTask
 
@@ -41,17 +42,15 @@ ExecutionDate также предоставл€ет методы дл€ изменени€ дат и времени начала и ок
 
 ### TaskEnhancer
 
-TaskEnhancer - это абстрактный базовый класс дл€ всех декораторов задач. ќн включает в себ€ общие атрибуты и методы, такие как Title, Description, StateTask, GetId(), Info(), DeleteTask(ref ITask deleteTask) и ChangeTask(ITask lastTask, ITask newTask).
+TaskEnhancer - это абстрактный базовый класс дл€ всех декораторов задач. ќн включает в себ€ общие атрибуты и методы, такие как Title, Description, StateTask, GetId(), GetState(), Info(), DeleateTask(ref ITask deleteTask), CompleteTask() и ChangeTask(ITask lastTask, ITask newTask).
 
 ## »нтерфейс ITask
 
-ITask - это интерфейс, который определ€ет общие атрибуты и методы дл€ всех классов задач. ќн включает в себ€ Title, Description, StateTask, GetId(), Info(), DeleteTask(ref ITask deleteTask) и ChangeTask(ITask lastTask, ITask newTask).
-
+ITask - это интерфейс, который определ€ет общие атрибуты и методы дл€ всех классов задач. ќн включает в себ€ Title, Description, StateTask, GetId(), GetState(), Info(), DeleateTask(ref ITask deleteTask), CompleteTask() и ChangeTask(ITask lastTask, ITask newTask).
 
 ## ѕримеры использовани€
 
 ```csharp
-
 using DecoratorTask.Decorators;
 using DecoratorTask.Entities;
 using DecoratorTask.Enums;

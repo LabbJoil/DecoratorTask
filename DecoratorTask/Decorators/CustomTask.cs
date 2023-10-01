@@ -128,5 +128,5 @@ public class CustomTask : TaskEnhancer
         => $"Priority: {ConditionPriority}, Is Archived: {IsArchived} | " + Task.Info();
 
     public override void CompleteTask()
-        => ChangeState(State.Complete);
+        => Task.CompleteTask();
 }
