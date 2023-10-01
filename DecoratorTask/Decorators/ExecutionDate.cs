@@ -164,6 +164,8 @@ public class ExecutionDate : TaskEnhancer
                 break;
 
             case Repeat.None:
+                if (DateStartTask > dateNow) DateStartTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
+                if (DateEndTask > dateNow) DateEndTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
                 stateTask = State.Complete;
                 break;
         }
