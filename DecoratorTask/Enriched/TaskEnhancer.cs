@@ -13,9 +13,11 @@ public abstract class TaskEnhancer : ITask
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    public int GetId() => Task.GetId();
+    public int GetId()
+        => Task.GetId();
 
-    public State GetState() => Task.GetState();
+    public State GetState()
+        => Task.GetState();
 
     public void DeleateTask(ref ITask deleteTask)
         => Task.DeleateTask(ref deleteTask);
