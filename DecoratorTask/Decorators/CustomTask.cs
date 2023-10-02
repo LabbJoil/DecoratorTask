@@ -21,13 +21,13 @@ public class CustomTask : TaskEnhancer
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    public void ArchivedTask(string filePath, string name = "")
+    public void ArchivedTask(string filePath, string fileName = "")
     {
         if (IsArchived) throw new Exception($"Задача уже заархивирована ({ArchivedFilePath})");
 
         string json = JsonConvert.SerializeObject(this);
-        if (name == "") name = Title;
-        filePath = $"{filePath}\\{name}.json";
+        if (fileName == "") fileName = Title;
+        filePath = $"{filePath}\\{fileName}.json";
 
         File.WriteAllText(filePath, json);
         IsArchived = true;
@@ -67,7 +67,7 @@ public class CustomTask : TaskEnhancer
         List<ITask> filterListTask = new();
         foreach (ITask task in sourceList)
         {
-            CustomTask? priorityTask = GetPriorityTask(task);
+            CustomTask? priorityTask = GetCustomTask(task);
             if (priorityTask == null || priorityTask.ConditionPriority != necessaryPriority) continue;
             filterListTask.Add(task);
         }
@@ -90,7 +90,7 @@ public class CustomTask : TaskEnhancer
         List<ITask> filterListTask = new();
         foreach (ITask task in sourceList)
         {
-            CustomTask? priorityTask = GetPriorityTask(task);
+            CustomTask? priorityTask = GetCustomTask(task);
             if (priorityTask == null || priorityTask.IsArchived != isArchived) continue;
             filterListTask.Add(task);
         }
@@ -137,11 +137,11 @@ public class CustomTask : TaskEnhancer
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    public static CustomTask? GetPriorityTask(ITask task)
+    public static CustomTask? GetCustomTask(ITask task)
     {
         if (task is CustomTask statusTask) return statusTask;
         else if (task is TaskEnhancer taskEnhancer)
-            return GetPriorityTask(taskEnhancer.Task);
+            return GetCustomTask(taskEnhancer.Task);
         return null;
     }
 
