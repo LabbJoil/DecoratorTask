@@ -14,10 +14,10 @@ public class CustomTaskTests
 
     private static readonly ITask? basicTask2 = new BasicTask("Task 2", "Description about task 2", State.Expectation);
     private static readonly ITask? executionDate2 = new ExecutionDate(ref basicTask2);
-    private static readonly ITask Task2 = new CustomTask(ref executionDate2, Priority.Standard, true);
+    private static readonly ITask Task2 = new CustomTask(ref executionDate2, Priority.Standard);
 
     private static readonly ITask? basicTask3 = new BasicTask("Task 3", "Description about task 3", State.InProcess);
-    private static readonly ITask Task3 = new CustomTask(ref basicTask3, Priority.NotNecessary, true);
+    private static readonly ITask Task3 = new CustomTask(ref basicTask3, Priority.NotNecessary);
 
     private static readonly ITask? basicTask4 = new BasicTask("Task 4", "Description about task 4", State.Complete);
     private static readonly ITask? executionDate4 = new CustomTask(ref basicTask4, Priority.Priority);
@@ -56,6 +56,66 @@ public class CustomTaskTests
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
     [TestMethod]
+    public void ArchivedTask_Valid()
+    {
+        // Arrange
+        string filePath = AppDomain.CurrentDomain.BaseDirectory;
+        string fileName = "testArchivedTask";
+
+        ITask? basicTask = new BasicTask();
+        ITask? executionDate = new ExecutionDate(ref basicTask);
+        CustomTask customTask = new(ref executionDate);
+
+        // Act
+        customTask.ArchivedTask(filePath, fileName);
+        File.Delete($"{filePath}\\{fileName}.json");
+
+        // Assert
+        Assert.AreEqual(customTask.IsArchived, true);
+        Assert.AreEqual(customTask.ArchivedFilePath, $"{filePath}\\{fileName}.json");
+    }
+
+    [TestMethod]
+    public void GetArchivedTask_Valid()
+    {
+        // Arrange
+        string filePath = AppDomain.CurrentDomain.BaseDirectory;
+        string fileName = "testArchivedTask";
+        string respons = @"{""Task"":{""Title"":""New Task"",""Description"":"""",""StateTask"":0},""ConditionPriority"":1,""IsArchived"":false,""ArchivedFilePath"":null,""Title"":""New Task"",""Description"":""""}";
+
+        ITask? basicTask = new BasicTask();
+        CustomTask customTask = new(ref basicTask);
+
+        // Act
+        customTask.ArchivedTask(filePath, fileName);
+        string archiveTask = customTask.GetArchivedTask();
+        File.Delete($"{filePath}\\{fileName}.json");
+
+        // Assert
+        Assert.AreEqual(archiveTask, respons);
+    }
+
+    [TestMethod]
+    public void DeleteArchivedTask_Valid()
+    {
+        string filePath = AppDomain.CurrentDomain.BaseDirectory;
+        string fileName = "testArchivedTask";
+
+        ITask? basicTask = new BasicTask();
+        CustomTask customTask = new(ref basicTask);
+
+        // Act
+        customTask.ArchivedTask(filePath, fileName);
+        customTask.ClearArchivedTask();
+
+        // Assert
+        Assert.AreEqual(customTask.IsArchived, false);
+        Assert.AreEqual(customTask.ArchivedFilePath, string.Empty);
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------------------------------------
+
+    [TestMethod]
     public void FilterTasks_ByPriority_ReturnsMatchingTasks()
     {
         // Arrange
@@ -87,10 +147,20 @@ public class CustomTaskTests
     public void FilterTasks_ByIsArchived_ReturnsMatchingTasks()
     {
         // Arrange
-        List<ITask> correctTasks = new() { Task2, Task3 };
+        string filePath = AppDomain.CurrentDomain.BaseDirectory;
+        string fileName = "testArchivedTask";
+
+        ITask? task = new BasicTask("My Task", "Description about My task", State.Expectation);
+        task = new ExecutionDate(ref task);
+        CustomTask customTask = new(ref task, Priority.Standard);
+        customTask.ArchivedTask(filePath, fileName);
+
+        List<ITask> correctTasks = new() { customTask };
+        List<ITask> testTasks = correctTasks.Concat(TestTasks).ToList();
 
         // Act
-        List<ITask> filteredTasks = CustomTask.FilterTasksByIsArchived(TestTasks, true);
+        List<ITask> filteredTasks = CustomTask.FilterTasksByIsArchived(testTasks, true);
+        File.Delete($"{filePath}\\{fileName}.json");
 
         // Assert
         Assert.AreEqual(correctTasks.Count, filteredTasks.Count);
@@ -154,7 +224,7 @@ public class CustomTaskTests
         DateTime dateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
         DateTime dateEndTask = dateStartTask.AddHours(1);
 
-        string expectedInfoTask2 = $"Priority: Standard, Is Archived: True | " +
+        string expectedInfoTask2 = $"Priority: Standard, Is Archived: False, Archived File Path:  | " +
             $"TimeStart: {dateStartTask}, TimeEnd: {dateEndTask}, OftenRepeat: None | " +
             $"Id: {Task2.GetId()}, Titel: Task 2, Description: Description about task 2, State: Expectation | ";
 
