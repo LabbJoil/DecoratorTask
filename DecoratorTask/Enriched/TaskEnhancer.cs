@@ -5,7 +5,7 @@ namespace DecoratorTask.Enriched;
 
 public abstract class TaskEnhancer : ITask
 {
-    public ITask Task;
+    protected ITask Task;
     public string Title { get => Task.Title; set => Task.Title = value; }
     public string Description { get => Task.Description; set => Task.Description = value; }
 
