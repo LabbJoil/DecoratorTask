@@ -2,6 +2,7 @@
 using DecoratorTask.Entities;
 using DecoratorTask.Enums;
 using DecoratorTask.Interfaces;
+using System.Diagnostics;
 
 namespace DecoratorTaskTest;
 [TestClass]
@@ -127,5 +128,33 @@ public class BasicTaskTests
 
         // Assert
         Assert.IsTrue(id > 0);
+    }
+
+    [TestMethod]
+    public void CompleteTask_ChangeStateToComplete()
+    {
+        // Arrange
+        State newState = State.Complete;
+        BasicTask basicTask = new();
+
+        // Act
+        basicTask.CompleteTask();
+
+        // Assert
+        Assert.AreEqual(newState, basicTask.StateTask);
+    }
+
+    [TestMethod]
+    public void ChangeState_ChangeStateInProcess()
+    {
+        // Arrange
+        State newState = State.InProcess;
+        BasicTask basicTask = new();
+
+        // Act
+        basicTask.ChangeState(newState);
+
+        // Assert
+        Assert.AreEqual(newState, basicTask.StateTask);
     }
 }
