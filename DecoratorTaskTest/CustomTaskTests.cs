@@ -92,7 +92,7 @@ public class CustomTaskTests
     }
 
     [TestMethod]
-    public void GetArchivedTask_Valid()
+    public void GetArchivedTask_ReturnJSON()
     {
         // Arrange
         string filePath = AppDomain.CurrentDomain.BaseDirectory;
