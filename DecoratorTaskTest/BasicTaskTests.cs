@@ -2,7 +2,6 @@
 using DecoratorTask.Entities;
 using DecoratorTask.Enums;
 using DecoratorTask.Interfaces;
-using System.Diagnostics;
 
 namespace DecoratorTaskTest;
 [TestClass]
