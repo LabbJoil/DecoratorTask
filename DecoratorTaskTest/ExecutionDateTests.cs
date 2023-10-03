@@ -6,7 +6,7 @@ using DecoratorTask.Interfaces;
 namespace DecoratorTaskTest;
 
 [TestClass]
-public class ExecutionDateTest
+public class ExecutionDateTests
 {
     private readonly DateTime StartDate = DateTime.ParseExact("10.10.2050 14:30", "d.M.yyyy HH:mm", null);
     private readonly DateTime EndDate = DateTime.ParseExact("16.10.2050 15:30", "d.M.yyyy HH:mm", null);
