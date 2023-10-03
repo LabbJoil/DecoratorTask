@@ -14,7 +14,7 @@ public class BasicTaskTests
     }
 
     [TestMethod]
-    public void Constructor_DefaultValues()
+    public void Constructor_DefaultValues_AssignsCorrectly()
     {
         // Act
         BasicTask basicTask = new();
@@ -27,7 +27,7 @@ public class BasicTaskTests
     }
 
     [TestMethod]
-    public void Constructor_WithValues()
+    public void Constructor_WithValues_AssignsCorrectly()
     {
         // Arrange
         string name = "Test Task";

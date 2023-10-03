@@ -32,7 +32,7 @@ public class ExecutionDateTest
     }
 
     [TestMethod]
-    public void Constructor_WithValues()
+    public void Constructor_Full()
     {
         // Arrange
         Repeat repeat = Repeat.EveryWeek;

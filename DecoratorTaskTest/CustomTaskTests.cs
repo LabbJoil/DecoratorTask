@@ -53,22 +53,6 @@ public class CustomTaskTests
         Assert.AreEqual(isArchived, customTask.IsArchived);
     }
 
-    [TestMethod]
-    public void Constructor_WithValues()
-    {
-        // Arrange
-        Priority priorityTask = Priority.Priority;
-        bool isArchived = false;
-
-        // Act
-        ITask? basicTask = new BasicTask();
-        CustomTask customTask = new(ref basicTask, Priority.Priority);
-
-        // Assert
-        Assert.AreEqual(priorityTask, customTask.ConditionPriority);
-        Assert.AreEqual(isArchived, customTask.IsArchived);
-    }
-
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
     [TestMethod]
