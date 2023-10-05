@@ -60,7 +60,7 @@ using DecoratorTask.Interfaces;
 ITask task = new BasicTask("My Task", "description about my task", State.InProcess);
 
 // ƒобавление дополнительных атрибутов к задаче
-task = new CustomTask(ref task, Priority.Priority);
+task = new CustomTask(task, Priority.Priority);
 
 // ƒобавление дедлайна к задаче и частоты повторений
-task = new ExecutionDate(ref task, Repeat.Everyday, DateTime.Now.AddHours(3), DateTime.Now.AddHours(6));
+task = new ExecutionDate(task, Repeat.Everyday, DateTime.Now.AddHours(3), DateTime.Now.AddHours(6));
