@@ -39,7 +39,7 @@ public class BasicTaskTests
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
     [TestMethod]
-    public void GetId_ReturnsValidId()
+    public void GetId_ReturnsId()
     {
         // Arrange
         BasicTask basicTask = new();
@@ -49,6 +49,20 @@ public class BasicTaskTests
 
         // Assert
         Assert.IsTrue(id > 0);
+    }
+
+    [TestMethod]
+    public void GetState_ReturnsState()
+    {
+        // Arrange
+        BasicTask basicTask = new();
+        basicTask.CompleteTask();
+
+        // Act
+        State state = basicTask.GetState();
+
+        // Assert
+        Assert.AreEqual(state, State.Complete);
     }
 
     [TestMethod]
