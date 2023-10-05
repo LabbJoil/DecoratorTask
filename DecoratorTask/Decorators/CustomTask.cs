@@ -12,12 +12,8 @@ public class CustomTask : TaskEnhancer
     public bool IsArchived { get; private set; }
     public string? ArchivedFilePath {  get; private set; }
 
-    public CustomTask(ref ITask? task, Priority conditionPriority = Priority.Standard) : base(task)
-    {
-        ConditionPriority = conditionPriority;
-        ChangeTask(task, this);
-        task = null;
-    }
+    public CustomTask(ITask task, Priority conditionPriority = Priority.Standard) : base(task)
+        => ConditionPriority = conditionPriority;
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 

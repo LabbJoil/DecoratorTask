@@ -11,19 +11,17 @@ public class ExecutionDate : TaskEnhancer
     public DateTime DateEndTask { get; private set; }
     public Repeat OftenRepeat { get; private set; }
 
-    public ExecutionDate(ref ITask? task) : base(task)
+    public ExecutionDate(ITask task) : base(task)
     {
         DateTime nowDateTime = DateTime.Now;
         DateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
         DateEndTask = DateStartTask.AddHours(1);
 
         OftenRepeat = Repeat.None;
-        ChangeTask(task, this);
         Checked();
-        task = null;
     }
 
-    public ExecutionDate(ref ITask? task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
+    public ExecutionDate(ITask task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
     {
         DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
         if (dateEndTask < nowDate || dateStartTask > dateEndTask)
@@ -33,9 +31,7 @@ public class ExecutionDate : TaskEnhancer
         DateStartTask = new DateTime(dateStartTask.Year, dateStartTask.Month, dateStartTask.Day, dateStartTask.Hour, dateStartTask.Minute, 0);
         DateEndTask = new DateTime(dateEndTask.Year, dateEndTask.Month, dateEndTask.Day, dateEndTask.Hour, dateEndTask.Minute, 0);
         OftenRepeat = oftenRepeat;
-        ChangeTask(task, this);
         Checked();
-        task = null;
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------

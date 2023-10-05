@@ -8,30 +8,41 @@ namespace DecoratorTaskTest;
 [TestClass]
 public class CustomTaskTests
 {
-    private static readonly ITask? basicTask1 = new BasicTask("Task 1", "Description about task 1", State.Complete);
-    private static readonly ITask? executionDate1 = new CustomTask(ref basicTask1, Priority.Priority);
-    private static readonly ITask Task1 = new ExecutionDate(ref executionDate1);
+    private static readonly ITask Task1 = new ExecutionDate(
+        new CustomTask(
+            new BasicTask("Task 1", "Description about task 1", State.Complete),
+            Priority.Priority)
+        );
 
-    private static readonly ITask? basicTask2 = new BasicTask("Task 2", "Description about task 2", State.Expectation);
-    private static readonly ITask? executionDate2 = new ExecutionDate(ref basicTask2);
-    private static readonly ITask Task2 = new CustomTask(ref executionDate2, Priority.Standard);
+    private static readonly ITask Task2 = new CustomTask(
+        new ExecutionDate(
+            new BasicTask("Task 2", "Description about task 2", State.Expectation)),
+            Priority.Standard
+        );
 
-    private static readonly ITask? basicTask3 = new BasicTask("Task 3", "Description about task 3", State.InProcess);
-    private static readonly ITask Task3 = new CustomTask(ref basicTask3, Priority.NotNecessary);
+    private static readonly ITask Task3 = new CustomTask(
+        new BasicTask("Task 3", "Description about task 3", State.InProcess),
+        Priority.NotNecessary
+        );
 
-    private static readonly ITask? basicTask4 = new BasicTask("Task 4", "Description about task 4", State.Complete);
-    private static readonly ITask? executionDate4 = new CustomTask(ref basicTask4, Priority.Priority);
-    private static readonly ITask Task4 = new ExecutionDate(ref executionDate4, Repeat.EveryWeek,
+    private static readonly ITask Task4 = new ExecutionDate(
+        new CustomTask(
+            new BasicTask("Task 4", "Description about task 4", State.Complete),
+            Priority.Priority),
+        Repeat.EveryWeek,
         DateTime.ParseExact("21.09.2050 12:33", "d.M.yyyy HH:mm", null),
         DateTime.ParseExact("25.09.2050 12:34", "d.M.yyyy HH:mm", null)
         );
 
-    private static readonly ITask? basicTask5 = new BasicTask("Task 5", "Description about task 5", State.Complete);
-    private static readonly ITask? executionDate5 = new ExecutionDate(ref basicTask5, Repeat.EveryMonth,
-        DateTime.ParseExact("21.09.2050 12:33", "d.M.yyyy HH:mm", null),
-        DateTime.ParseExact("16.10.2050 12:34", "d.M.yyyy HH:mm", null)
+    private static readonly ITask Task5 = new CustomTask(
+        new ExecutionDate(
+            new BasicTask("Task 5", "Description about task 5", State.Complete),
+            Repeat.EveryMonth,
+            DateTime.ParseExact("21.09.2050 12:33", "d.M.yyyy HH:mm", null),
+            DateTime.ParseExact("16.10.2050 12:34", "d.M.yyyy HH:mm", null)
+            ), 
+        Priority.Priority
         );
-    private static readonly ITask Task5 = new CustomTask(ref executionDate5, Priority.Priority);
 
     private static readonly List<ITask> TestTasks = new() { Task1, Task2, Task3, Task4, Task5 };
 
@@ -45,8 +56,8 @@ public class CustomTaskTests
         bool isArchived = false;
 
         // Act
-        ITask? basicTask = new BasicTask();
-        CustomTask customTask = new(ref basicTask);
+        ITask basicTask = new BasicTask();
+        CustomTask customTask = new(basicTask);
 
         // Assert
         Assert.AreEqual(priorityTask, customTask.ConditionPriority);
@@ -61,8 +72,8 @@ public class CustomTaskTests
         bool isArchived = false;
 
         // Act
-        ITask? basicTask = new BasicTask();
-        CustomTask customTask = new(ref basicTask, priorityTask);
+        ITask basicTask = new BasicTask();
+        CustomTask customTask = new(basicTask, priorityTask);
 
         // Assert
         Assert.AreEqual(priorityTask, customTask.ConditionPriority);
@@ -78,9 +89,9 @@ public class CustomTaskTests
         string filePath = AppDomain.CurrentDomain.BaseDirectory;
         string fileName = "testArchivedTask";
 
-        ITask? basicTask = new BasicTask();
-        ITask? executionDate = new ExecutionDate(ref basicTask);
-        CustomTask customTask = new(ref executionDate);
+        ITask basicTask = new BasicTask();
+        ITask executionDate = new ExecutionDate( basicTask);
+        CustomTask customTask = new(executionDate);
 
         // Act
         customTask.ArchivedTask(filePath, fileName);
@@ -99,8 +110,8 @@ public class CustomTaskTests
         string fileName = "testArchivedTask";
         string expectedRespons = "{\"ConditionPriority\":1,\"IsArchived\":false,\"ArchivedFilePath\":null,\"Task\":{\"Title\":\"New Task\",\"Description\":\"\",\"StateTask\":0},\"Title\":\"New Task\",\"Description\":\"\"}";
 
-        ITask? basicTask = new BasicTask();
-        CustomTask customTask = new(ref basicTask);
+        ITask basicTask = new BasicTask();
+        CustomTask customTask = new(basicTask);
 
         // Act
         customTask.ArchivedTask(filePath, fileName);
@@ -117,8 +128,8 @@ public class CustomTaskTests
         string filePath = AppDomain.CurrentDomain.BaseDirectory;
         string fileName = "testArchivedTask";
 
-        ITask? basicTask = new BasicTask();
-        CustomTask customTask = new(ref basicTask);
+        ITask basicTask = new BasicTask();
+        CustomTask customTask = new(basicTask);
 
         // Act
         customTask.ArchivedTask(filePath, fileName);
@@ -166,9 +177,9 @@ public class CustomTaskTests
         string filePath = AppDomain.CurrentDomain.BaseDirectory;
         string fileName = "testArchivedTask";
 
-        ITask? task = new BasicTask("My Task", "Description about My task", State.Expectation);
-        task = new ExecutionDate(ref task);
-        CustomTask customTask = new(ref task, Priority.Standard);
+        ITask task = new BasicTask("My Task", "Description about My task", State.Expectation);
+        task = new ExecutionDate( task);
+        CustomTask customTask = new( task, Priority.Standard);
         customTask.ArchivedTask(filePath, fileName);
 
         List<ITask> correctTasks = new() { customTask };
@@ -254,15 +265,10 @@ public class CustomTaskTests
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
     [TestMethod]
-    public void GetPriorityTask_ReturnsCustomTask()
+    public void GetCustomTask_ReturnsCustomTask()
     {
-        // Arrange
-        ITask? basicTask = new BasicTask();
-        ITask? customTask = new CustomTask(ref basicTask);
-        ITask executionDate = new ExecutionDate(ref customTask);
-
-        // Act
-        CustomTask? task = CustomTask.GetCustomTask(executionDate);
+        // Arrange & Act
+        CustomTask? task = CustomTask.GetCustomTask(Task1);
 
         // Assert
         Assert.IsNotNull(task);
@@ -271,13 +277,8 @@ public class CustomTaskTests
     [TestMethod]
     public void GetExecutionDateTask_ReturnsCustomTask()
     {
-        // Arrange
-        ITask? basicTask = new BasicTask();
-        ITask? executionDate = new ExecutionDate(ref basicTask);
-        ITask customTask = new CustomTask(ref executionDate);
-
-        // Act
-        ExecutionDate? task = CustomTask.GetExecutionDateTask(customTask);
+        // Arrange & Act
+        ExecutionDate? task = CustomTask.GetExecutionDateTask(Task2);
 
         // Assert
         Assert.IsNotNull(task);

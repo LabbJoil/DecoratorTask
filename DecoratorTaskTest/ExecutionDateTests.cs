@@ -23,7 +23,7 @@ public class ExecutionDateTests
 
         // Act
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask);
+        ExecutionDate executionDate = new( basicTask);
 
         // Assert
         Assert.AreEqual(dateStartTask.Hour, executionDate.DateStartTask.Hour);
@@ -41,7 +41,7 @@ public class ExecutionDateTests
 
         // Act
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, repeat, startDate, endDate);
+        ExecutionDate executionDate = new( basicTask, repeat, startDate, endDate);
 
         // Assert
         Assert.AreEqual(DateTime.ParseExact("10.10.2050 14:30", "d.M.yyyy HH:mm", null), executionDate.DateStartTask);
@@ -60,7 +60,7 @@ public class ExecutionDateTests
 
         // Act & Assert
         Assert.ThrowsException<Exception>(() 
-            => new ExecutionDate(ref basicTask, repeat, StartDate, EndDate));
+            => new ExecutionDate( basicTask, repeat, StartDate, EndDate));
     }
 
     [TestMethod]
@@ -72,7 +72,7 @@ public class ExecutionDateTests
 
         // Act & Assert
         ITask? basicTask = new BasicTask();
-        Assert.ThrowsException<Exception>(() => new ExecutionDate(ref basicTask, repeat, IncorrectStartDate, EndDate));
+        Assert.ThrowsException<Exception>(() => new ExecutionDate( basicTask, repeat, IncorrectStartDate, EndDate));
     }
 
     [TestMethod]
@@ -84,7 +84,7 @@ public class ExecutionDateTests
 
         // Act & Assert
         ITask? basicTask = new BasicTask();
-        Assert.ThrowsException<Exception>(() => new ExecutionDate(ref basicTask, repeat, StartDate, IncorrectEndDate));
+        Assert.ThrowsException<Exception>(() => new ExecutionDate( basicTask, repeat, StartDate, IncorrectEndDate));
     }
 
     [TestMethod]
@@ -96,7 +96,7 @@ public class ExecutionDateTests
         DateTime IncorrectEndDate = DateTime.ParseExact(string.Join(".", new string[] { "09", "09", "2012", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
         // Act & Assert
-        Assert.ThrowsException<Exception>(() => new ExecutionDate(ref basicTask, repeat, StartDate, IncorrectEndDate));
+        Assert.ThrowsException<Exception>(() => new ExecutionDate( basicTask, repeat, StartDate, IncorrectEndDate));
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
+        ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
         DateTime newStartDate = DateTime.ParseExact(string.Join(".", new string[] { "15", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
 
         // Act
@@ -121,7 +121,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
+        ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
         DateTime newEndDate = DateTime.ParseExact(string.Join(".", new string[] { "30", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
         // Act
@@ -136,7 +136,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
+        ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
         Repeat repeat = Repeat.EveryMonth;
 
         // Act
@@ -153,7 +153,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
+        ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
         DateTime newStartDate = DateTime.ParseExact(string.Join(".", new string[] { "18", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
 
         // Act & Assert
@@ -165,7 +165,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
+        ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
         DateTime newEndDate = DateTime.ParseExact(string.Join(".", new string[] { "9", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
         // Act & Assert
@@ -177,7 +177,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, StartDate, EndDate);
+        ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
         Repeat repeat = Repeat.Everyday;
 
         // Act & Assert
@@ -191,7 +191,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask);
+        ExecutionDate executionDate = new( basicTask);
 
         // Act
         executionDate.Checked();
@@ -205,7 +205,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.EveryMonth, DateTime.Now.AddDays(-10), DateTime.Now.AddDays(15));
+        ExecutionDate executionDate = new( basicTask, Repeat.EveryMonth, DateTime.Now.AddDays(-10), DateTime.Now.AddDays(15));
 
         // Act
         executionDate.Checked();
@@ -219,7 +219,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, DateTime.Now, DateTime.Now);
+        ExecutionDate executionDate = new( basicTask, Repeat.None, DateTime.Now, DateTime.Now);
 
         // Act
         executionDate.Checked();
@@ -235,7 +235,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.EveryMonth, DateTime.Now.AddDays(-5), DateTime.Now.AddDays(5));
+        ExecutionDate executionDate = new( basicTask, Repeat.EveryMonth, DateTime.Now.AddDays(-5), DateTime.Now.AddDays(5));
 
         // Act
         executionDate.CompleteTask();
@@ -249,7 +249,7 @@ public class ExecutionDateTests
     {
         // Arrange
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new(ref basicTask, Repeat.None, DateTime.Now.AddDays(-5), DateTime.Now.AddDays(5));
+        ExecutionDate executionDate = new( basicTask, Repeat.None, DateTime.Now.AddDays(-5), DateTime.Now.AddDays(5));
 
         // Act
         executionDate.CompleteTask();
