@@ -13,6 +13,7 @@ public class ExecutionDate : TaskEnhancer
 
     public ExecutionDate(ITask task) : base(task)
     {
+        if (CustomTask.GetExecutionDateTask(task) != null) throw new Exception("ExecutionDateTask уже используется как один из декорирующих элементов.");
         DateTime nowDateTime = DateTime.Now;
         DateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
         DateEndTask = DateStartTask.AddHours(1);
@@ -23,6 +24,7 @@ public class ExecutionDate : TaskEnhancer
 
     public ExecutionDate(ITask task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
     {
+        if (CustomTask.GetExecutionDateTask(task) != null) throw new Exception("ExecutionDateTask уже используется как один из декорирующих элементов.");
         DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
         if (dateEndTask < nowDate || dateStartTask > dateEndTask)
             throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");

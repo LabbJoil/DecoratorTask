@@ -13,7 +13,10 @@ public class CustomTask : TaskEnhancer
     public string? ArchivedFilePath {  get; private set; }
 
     public CustomTask(ITask task, Priority conditionPriority = Priority.Standard) : base(task)
-        => ConditionPriority = conditionPriority;
+    {
+        if(GetCustomTask(task) != null ) throw new Exception("CustomTask уже используется как один из декорирующих элементов.");
+        ConditionPriority = conditionPriority;
+    }
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
