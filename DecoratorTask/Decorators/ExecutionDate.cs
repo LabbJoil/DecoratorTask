@@ -49,7 +49,7 @@ public class ExecutionDate : TaskEnhancer
 
     public void ChangeDateEnd(DateTime newDateEnd)
     {
-        if (DateTime.Now > newDateEnd|| DateStartTask > newDateEnd) 
+        if (DateStartTask > newDateEnd) 
             throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
         CheckCorrectStatusRepeat(OftenRepeat, newDateEnd, DateEndTask);
         DateEndTask = new DateTime(newDateEnd.Year, newDateEnd.Month, newDateEnd.Day, newDateEnd.Hour, newDateEnd.Minute, 0);
