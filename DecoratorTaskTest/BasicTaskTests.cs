@@ -42,13 +42,14 @@ public class BasicTaskTests
     public void GetId_ReturnsId()
     {
         // Arrange
-        BasicTask basicTask = new();
+        int idTask = 11111;
+        BasicTask basicTask = new("new task", "about new task", State.Expectation, idTask);
 
         // Act
-        int id = basicTask.GetId();
+        int id = basicTask.Id;
 
         // Assert
-        Assert.IsTrue(id > 0);
+        Assert.IsTrue(id == idTask);
     }
 
     [TestMethod]

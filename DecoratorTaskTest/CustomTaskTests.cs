@@ -108,9 +108,9 @@ public class CustomTaskTests
         // Arrange
         string filePath = AppDomain.CurrentDomain.BaseDirectory;
         string fileName = "testArchivedTask";
-        string expectedRespons = "{\"ConditionPriority\":1,\"IsArchived\":false,\"ArchivedFilePath\":null,\"Task\":{\"Title\":\"New Task\",\"Description\":\"\",\"StateTask\":0},\"Title\":\"New Task\",\"Description\":\"\"}";
+        string expectedRespons = "{\"ConditionPriority\":1,\"IsArchived\":false,\"ArchivedFilePath\":null,\"Task\":{\"Id\":1111,\"Title\":\"New Task\",\"Description\":\"About new task\",\"StateTask\":0},\"Id\":1111,\"Title\":\"New Task\",\"Description\":\"About new task\"}";
 
-        ITask basicTask = new BasicTask();
+        ITask basicTask = new BasicTask("New Task", "About new task", State.Expectation, 1111);
         CustomTask customTask = new(basicTask);
 
         // Act
@@ -253,7 +253,7 @@ public class CustomTaskTests
 
         string expectedInfoTask2 = $"Priority: Standard, Is Archived: False, Archived File Path:  | " +
             $"TimeStart: {dateStartTask}, TimeEnd: {dateEndTask}, OftenRepeat: None | " +
-            $"Id: {Task2.GetId()}, Titel: Task 2, Description: Description about task 2, State: Expectation | ";
+            $"Id: {Task2.Id}, Titel: Task 2, Description: Description about task 2, State: Expectation | ";
 
         // Act
         string returnInfoTask2 = Task2.Info();

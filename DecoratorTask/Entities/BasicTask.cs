@@ -5,31 +5,31 @@ namespace DecoratorTask.Entities;
 
 public class BasicTask : ITask
 {
-    private readonly int Id;
+    private readonly int IdTask;
 
+    public int Id { get => IdTask; }
     public string Title { get; set; }
     public string Description { get; set; }
     public State StateTask { get; private set; }
 
-    public BasicTask()
+    public BasicTask(int id = -1)
     {
         Title = "New Task";
         Description = string.Empty;
-        Id = GetHashCode();
+        IdTask = id == -1 ? GetHashCode() : id;
         StateTask = State.Expectation;
     }
 
-    public BasicTask(string name, string description, State state = State.Expectation)
+    public BasicTask(string name, string description, State state = State.Expectation, int id = -1)
     {
         Title = name;
         Description = description;
-        Id = GetHashCode();
+        IdTask = id == -1 ? GetHashCode() : id;
         StateTask = state;
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
-    public int GetId() => Id;
     public State GetState() => StateTask;
 
     public string Info()

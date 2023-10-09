@@ -4,10 +4,10 @@ namespace DecoratorTask.Interfaces;
 
 public interface ITask
 {
+    public int Id { get; }
     public string Title { get; set; }
     public string Description { get; set; }
 
-    public int GetId();
     public State GetState();
 
     public string Info();
