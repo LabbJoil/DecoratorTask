@@ -97,10 +97,10 @@ public class CustomTaskTests
         // Act
         customTask.ArchivedTask(filePath, fileName);
         StreamReader reader = File.OpenText($"{filePath}\\{fileName}.json");
+        reader.Close();
 
         // Assert
         Assert.AreEqual(reader.ReadToEnd(), expectedRespons);
-        reader.Close();
         File.Delete($"{filePath}\\{fileName}.json");
     }
 
