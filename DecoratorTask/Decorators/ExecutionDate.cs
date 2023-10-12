@@ -68,19 +68,13 @@ public class ExecutionDate : TaskEnhancer
 
     public void Checked()
     {
-        State stateTask = GetState();
         DateTime dateNow = DateTime.Now;
-
         if (dateNow >= DateStartTask && dateNow < DateEndTask)
-            stateTask = State.InProcess;
+            StateTask = State.InProcess;
         else if (dateNow < DateStartTask)
-            stateTask = State.Expectation;
+            StateTask = State.Expectation;
         else if (dateNow >= DateEndTask)
-            stateTask = State.Complete;
-
-        if (stateTask == State.Complete)
-            stateTask = CalculateNextTaskDates();
-        StateTask = stateTask;
+            StateTask = CalculateNextTaskDates();
     }
 
     public override string Info()

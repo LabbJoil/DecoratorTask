@@ -60,7 +60,7 @@ public class BasicTaskTests
         basicTask.CompleteTask();
 
         // Act
-        State state = basicTask.GetState();
+        State state = basicTask.StateTask;
 
         // Assert
         Assert.AreEqual(state, State.Complete);
@@ -85,10 +85,12 @@ public class BasicTaskTests
     {
         // Arrange
         State newState = State.InProcess;
-        BasicTask basicTask = new();
 
         // Act
-        basicTask.StateTask = newState;
+        BasicTask basicTask = new()
+        {
+            StateTask = newState
+        };
 
         // Assert
         Assert.AreEqual(newState, basicTask.StateTask);

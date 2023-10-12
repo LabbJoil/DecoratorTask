@@ -197,7 +197,7 @@ public class ExecutionDateTests
         executionDate.Checked();
 
         // Assert
-        Assert.AreEqual(State.Expectation, executionDate.GetState());
+        Assert.AreEqual(State.Expectation, executionDate.StateTask);
     }
 
     [TestMethod]
@@ -211,7 +211,7 @@ public class ExecutionDateTests
         executionDate.Checked();
 
         // Assert
-        Assert.AreEqual(State.InProcess, executionDate.GetState());
+        Assert.AreEqual(State.InProcess, executionDate.StateTask);
     }
 
     [TestMethod]
@@ -225,7 +225,7 @@ public class ExecutionDateTests
         executionDate.Checked();
 
         // Assert
-        Assert.AreEqual(State.Complete, executionDate.GetState());
+        Assert.AreEqual(State.Complete, executionDate.StateTask);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ public class ExecutionDateTests
         executionDate.CompleteTask();
 
         // Assert
-        Assert.AreEqual(State.Expectation, executionDate.GetState());
+        Assert.AreEqual(State.Expectation, executionDate.StateTask);
     }
 
     [TestMethod]
@@ -255,6 +255,6 @@ public class ExecutionDateTests
         executionDate.CompleteTask();
 
         // Assert
-        Assert.AreEqual(State.Complete, executionDate.GetState());
+        Assert.AreEqual(State.Complete, executionDate.StateTask);
     }
 }

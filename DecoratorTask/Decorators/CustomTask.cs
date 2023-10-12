@@ -1,16 +1,13 @@
 ﻿using DecoratorTask.Enriched;
 using DecoratorTask.Enums;
 using DecoratorTask.Interfaces;
-
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace DecoratorTask.Decorators;
 
 public class CustomTask : TaskEnhancer
 {
     public Priority ConditionPriority { get; set; }
-    public bool IsArchived { get; private set; }
-    public string? ArchivedFilePath {  get; private set; }
 
     public CustomTask(ITask task, Priority conditionPriority = Priority.Standard) : base(task)
     {
@@ -22,41 +19,22 @@ public class CustomTask : TaskEnhancer
 
     public void ArchivedTask(string filePath, string fileName = "")
     {
-        if (IsArchived) throw new Exception($"Задача уже заархивирована ({ArchivedFilePath})");
+        ITask task = this;
+        string jsonTask = JsonSerializer.Serialize(task);
+        jsonTask = jsonTask[..^1];
+        jsonTask += $", Priority:{ConditionPriority},";
 
-        string json = JsonConvert.SerializeObject(this);
+        if (GetExecutionDateTask(task) is ExecutionDate executionDate)
+        {
+            string jsonExecutionDate = JsonSerializer.Serialize(executionDate);
+            jsonTask += jsonExecutionDate[1..jsonExecutionDate.IndexOf(",\"Task\"")];
+        }
+
+        jsonTask += '}';
         if (fileName == "") fileName = Title;
         filePath = $"{filePath}\\{fileName}.json";
 
-        File.WriteAllText(filePath, json);
-        IsArchived = true;
-        ArchivedFilePath = filePath;
-    }
-
-    public string GetArchivedTask()
-    {
-        if (!IsArchived) throw new Exception($"Задача ещё не заархивирована");
-        if (File.Exists(ArchivedFilePath))
-        {
-            string json = File.ReadAllText(ArchivedFilePath);
-            return json;
-        }
-        else
-            throw new Exception("Файл не найден: " + ArchivedFilePath);
-    }
-
-    public void ClearArchivedTask()
-    {
-        if (!IsArchived) throw new Exception($"Задача ещё не заархивирована");
-        if (File.Exists(ArchivedFilePath))
-        {
-            File.Delete(ArchivedFilePath);
-        }
-        else
-            throw new Exception("Файл не найден: " + ArchivedFilePath);
-
-        ArchivedFilePath = string.Empty;
-        IsArchived = false;
+        File.WriteAllText(filePath, jsonTask);
     }
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
@@ -78,19 +56,7 @@ public class CustomTask : TaskEnhancer
         List<ITask> filterListTask = new();
         foreach (ITask task in sourceList)
         {
-            if(task.GetState() != stateTask) continue;
-            filterListTask.Add(task);
-        }
-        return filterListTask;
-    }
-
-    public static List<ITask> FilterTasksByIsArchived(List<ITask> sourceList, bool isArchived)
-    {
-        List<ITask> filterListTask = new();
-        foreach (ITask task in sourceList)
-        {
-            CustomTask? priorityTask = GetCustomTask(task);
-            if (priorityTask == null || priorityTask.IsArchived != isArchived) continue;
+            if(task.StateTask != stateTask) continue;
             filterListTask.Add(task);
         }
         return filterListTask;
@@ -165,7 +131,7 @@ public class CustomTask : TaskEnhancer
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
     public override string Info()
-        => $"Priority: {ConditionPriority}, Is Archived: {IsArchived}, Archived File Path: {ArchivedFilePath} | " + Task.Info();
+        => $"Priority: {ConditionPriority} | " + Task.Info();
 
     public override void CompleteTask()
         => Task.CompleteTask();
