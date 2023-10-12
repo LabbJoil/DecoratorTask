@@ -119,18 +119,12 @@ public class ExecutionDate : TaskEnhancer
                 int addDay = (baseDate.TimeOfDay > DateStartTask.TimeOfDay) ? 0 : 1;
                 nextDateStartTask = baseDate.AddDays(addDay);
                 nextDateEndTask = baseDate.AddDays(addDay);
-
-                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
-                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
                 break;
 
             case Repeat.EveryWeek:
                 int mainDay = (baseDate.DayOfWeek < DateStartTask.DayOfWeek) ? 0 : 7;
                 nextDateStartTask = baseDate.AddDays(mainDay - (int)baseDate.DayOfWeek + (int)DateStartTask.DayOfWeek);
                 nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
-
-                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
-                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
                 break;
 
             case Repeat.EveryMonth:
@@ -138,9 +132,6 @@ public class ExecutionDate : TaskEnhancer
                 nextDateStartTask = new DateTime(baseDate.Year, baseDate.AddMonths(addMonth).Month, 1);
                 nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
                 nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
-
-                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
-                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
                 break;
 
             case Repeat.EveryYear:
@@ -148,17 +139,16 @@ public class ExecutionDate : TaskEnhancer
                 nextDateStartTask = new DateTime(baseDate.AddYears(addYear).Year, DateStartTask.Month, 1);
                 nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
                 nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
-
-                DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
-                DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
                 break;
 
-            case Repeat.None:
-                if (DateStartTask > dateNow) DateStartTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
-                if (DateEndTask > dateNow) DateEndTask = new DateTime(dateNow.Year, dateNow.Month, dateNow.Day, dateNow.Hour, dateNow.Minute, 0);
+            default:
+                nextDateStartTask = DateStartTask;
+                nextDateEndTask = DateEndTask;
                 stateTask = State.Complete;
                 break;
         }
+        DateStartTask = new DateTime(nextDateStartTask.Year, nextDateStartTask.Month, nextDateStartTask.Day, DateStartTask.Hour, DateStartTask.Minute, 0);
+        DateEndTask = new DateTime(nextDateEndTask.Year, nextDateEndTask.Month, nextDateEndTask.Day, DateEndTask.Hour, DateEndTask.Minute, 0);
         return stateTask;
     }
 }
