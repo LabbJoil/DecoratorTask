@@ -85,22 +85,22 @@ public class ExecutionDate : TaskEnhancer
         switch (repeat)
         {
             case Repeat.EveryDay:
-                if ((dateEnd - dateStart).Days > 1)
+                if ((dateEnd - dateStart).TotalDays > 1)
                     throw new Exception("Продолжительность задачи должна быть меньше или равна дню");
                 break;
 
             case Repeat.EveryWeek:
-                if ((dateEnd - dateStart).Days > 7)
+                if ((dateEnd - dateStart).TotalDays > 7)
                     throw new Exception("Продолжительность задачи должна быть меньше или равна недели");
                 break;
 
             case Repeat.EveryMonth:
-                if ((dateEnd - dateStart).Days > DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))
+                if ((dateEnd - dateStart).TotalDays > DateTime.DaysInMonth(dateStart.Year, dateStart.Month))
                     throw new Exception("Продолжительность задачи должна быть меньше или равна месяцу");
                 break;
 
             case Repeat.EveryYear:
-                if ((dateEnd - dateStart).Days > DateTime.Now.DayOfYear)
+                if ((dateEnd - dateStart).TotalDays > 365)
                     throw new Exception("Продолжительность задачи должна быть меньше или равна году");
                 break;
         }
