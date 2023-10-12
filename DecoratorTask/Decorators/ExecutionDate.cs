@@ -103,7 +103,7 @@ public class ExecutionDate : TaskEnhancer
 
             case Repeat.EveryYear:
                 if ((dateEnd - dateStart).Days > DateTime.Now.DayOfYear)
-                    throw new Exception("Продолжительность задачи должна быть меньше или равна месяцу");
+                    throw new Exception("Продолжительность задачи должна быть меньше или равна году");
                 break;
         }
     }
