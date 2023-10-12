@@ -9,16 +9,11 @@ public abstract class TaskEnhancer : ITask
     public int Id { get => Task.Id; }
     public string Title { get => Task.Title; set => Task.Title = value; }
     public string Description { get => Task.Description; set => Task.Description = value; }
+    public State StateTask { get => Task.StateTask; set => Task.StateTask = value; }
 
     public TaskEnhancer(ITask task) => Task = task ;
 
     //-----------------------------------------------------------------------------------------------------------------------------------------------
-
-    public State GetState()
-        => Task.GetState();
-
-    public void ChangeState(State newState)
-        => Task.ChangeState(newState);
 
     public abstract string Info();
 

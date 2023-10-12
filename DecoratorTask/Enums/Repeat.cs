@@ -4,7 +4,7 @@ namespace DecoratorTask.Enums;
 public enum Repeat
 {
     None,
-    Everyday,
+    EveryDay,
     EveryWeek,
     EveryMonth,
     EveryYear

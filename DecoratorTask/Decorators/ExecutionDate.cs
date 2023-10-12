@@ -27,7 +27,7 @@ public class ExecutionDate : TaskEnhancer
         if (CustomTask.GetExecutionDateTask(task) != null) throw new Exception("ExecutionDateTask уже используется как один из декорирующих элементов.");
         DateTime nowDate = new(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, DateTime.Now.Hour, DateTime.Now.Minute, 0);
         if (dateEndTask < nowDate || dateStartTask > dateEndTask)
-            throw new Exception("Дата окончания должна быть больше даты начала и сегодняшней даты");
+            throw new Exception("Дата окончания должна быть больше даты начала");
 
         CheckCorrectStatusRepeat(oftenRepeat, dateStartTask, dateEndTask);
         DateStartTask = new DateTime(dateStartTask.Year, dateStartTask.Month, dateStartTask.Day, dateStartTask.Hour, dateStartTask.Minute, 0);
@@ -64,7 +64,7 @@ public class ExecutionDate : TaskEnhancer
     //-----------------------------------------------------------------------------------------------------------------------------------------------
 
     public override void CompleteTask()
-        => ChangeState(CalculateNextTaskDates());
+        => StateTask = CalculateNextTaskDates();
 
     public void Checked()
     {
@@ -80,7 +80,7 @@ public class ExecutionDate : TaskEnhancer
 
         if (stateTask == State.Complete)
             stateTask = CalculateNextTaskDates();
-        ChangeState(stateTask);
+        StateTask = stateTask;
     }
 
     public override string Info()
@@ -92,7 +92,7 @@ public class ExecutionDate : TaskEnhancer
     {
         switch (repeat)
         {
-            case Repeat.Everyday:
+            case Repeat.EveryDay:
                 if ((dateEnd - dateStart).Days > 1)
                     throw new Exception("Продолжительность задачи должна быть меньше или равна дню");
                 break;
@@ -123,7 +123,7 @@ public class ExecutionDate : TaskEnhancer
 
         switch (OftenRepeat)
         {
-            case Repeat.Everyday:
+            case Repeat.EveryDay:
                 int addDay = (baseDate.TimeOfDay > DateStartTask.TimeOfDay) ? 0 : 1;
                 nextDateStartTask = baseDate.AddDays(addDay);
                 nextDateEndTask = baseDate.AddDays(addDay);

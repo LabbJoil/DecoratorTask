@@ -55,7 +55,7 @@ public class ExecutionDateTests
     public void Constructor_InValidRepeatInput_ThrowsException()
     {
         // Arrange
-        Repeat repeat = Repeat.Everyday;
+        Repeat repeat = Repeat.EveryDay;
         ITask? basicTask = new BasicTask();
 
         // Act & Assert
@@ -178,7 +178,7 @@ public class ExecutionDateTests
         // Arrange
         ITask? basicTask = new BasicTask();
         ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
-        Repeat repeat = Repeat.Everyday;
+        Repeat repeat = Repeat.EveryDay;
 
         // Act & Assert
         Assert.ThrowsException<Exception>(() => executionDate.ChangeRepeat(repeat));

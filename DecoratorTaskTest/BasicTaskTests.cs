@@ -88,7 +88,7 @@ public class BasicTaskTests
         BasicTask basicTask = new();
 
         // Act
-        basicTask.ChangeState(newState);
+        basicTask.StateTask = newState;
 
         // Assert
         Assert.AreEqual(newState, basicTask.StateTask);
