@@ -100,7 +100,11 @@ public class ExecutionDate : TaskEnhancer
                 break;
 
             case Repeat.EveryYear:
-                if ((dateEnd - dateStart).TotalDays > 365)
+                int daysInyear =
+                    (DateTime.IsLeapYear(dateStart.Year) && dateStart.Month < 3) ||
+                    (DateTime.IsLeapYear(dateEnd.Year) && dateEnd.Month > 3)
+                    ? 366 : 365;
+                if ((dateEnd - dateStart).TotalDays > daysInyear)
                     throw new Exception("Продолжительность задачи должна быть меньше или равна году");
                 break;
         }
@@ -124,21 +128,21 @@ public class ExecutionDate : TaskEnhancer
             case Repeat.EveryWeek:
                 int mainDay = (baseDate.DayOfWeek < DateStartTask.DayOfWeek) ? 0 : 7;
                 nextDateStartTask = baseDate.AddDays(mainDay - (int)baseDate.DayOfWeek + (int)DateStartTask.DayOfWeek);
-                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
+                nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
                 break;
 
             case Repeat.EveryMonth:
                 int addMonth = (baseDate.Day < DateStartTask.Day) ? 0 : 1;
                 nextDateStartTask = new DateTime(baseDate.Year, baseDate.AddMonths(addMonth).Month, 1);
                 nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
-                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
+                nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
                 break;
 
             case Repeat.EveryYear:
                 int addYear = (baseDate.DayOfYear < DateStartTask.DayOfYear) ? 0 : 1;
                 nextDateStartTask = new DateTime(baseDate.AddYears(addYear).Year, DateStartTask.Month, 1);
                 nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
-                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
+                nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
                 break;
 
             default:
