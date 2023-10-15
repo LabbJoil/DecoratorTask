@@ -11,6 +11,4 @@ public interface ITask
 
     public string Info();
     public void CompleteTask();
-
-    //internal void ChangeState(State newState);
 }
