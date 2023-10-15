@@ -11,7 +11,8 @@ public class CustomTask : TaskEnhancer
 
     public CustomTask(ITask task, Priority conditionPriority = Priority.Standard) : base(task)
     {
-        if(GetCustomTask(task) != null ) throw new Exception("CustomTask уже используется как один из декорирующих элементов.");
+        if(GetCustomTask(task) != null ) 
+            throw new Exception("CustomTask уже используется как один из декорирующих элементов.");
         ConditionPriority = conditionPriority;
     }
 
