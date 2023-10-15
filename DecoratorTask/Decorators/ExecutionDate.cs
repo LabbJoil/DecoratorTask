@@ -12,9 +12,16 @@ public class ExecutionDate : TaskEnhancer
 
     public ExecutionDate(ITask task) : base(task)
     {
-        if (CustomTask.GetExecutionDateTask(task) != null) throw new Exception("ExecutionDateTask уже используется как один из декорирующих элементов.");
+        if (CustomTask.GetExecutionDateTask(task) != null) 
+            throw new Exception("ExecutionDateTask уже используется как один из декорирующих элементов.");
         DateTime nowDateTime = DateTime.Now;
-        DateStartTask = new DateTime(nowDateTime.Year, nowDateTime.Month, nowDateTime.Day, nowDateTime.Hour, nowDateTime.Minute, 0).AddHours(1);
+        DateStartTask = new DateTime(
+            nowDateTime.Year,
+            nowDateTime.Month,
+            nowDateTime.Day,
+            nowDateTime.Hour,
+            nowDateTime.Minute, 0
+            ).AddHours(1);
         DateEndTask = DateStartTask.AddHours(1);
 
         OftenRepeat = Repeat.None;
@@ -23,13 +30,19 @@ public class ExecutionDate : TaskEnhancer
 
     public ExecutionDate(ITask task, Repeat oftenRepeat, DateTime dateStartTask, DateTime dateEndTask) : base(task)
     {
-        if (CustomTask.GetExecutionDateTask(task) != null) throw new Exception("ExecutionDateTask уже используется как один из декорирующих элементов.");
+        if (CustomTask.GetExecutionDateTask(task) != null) 
+            throw new Exception("ExecutionDateTask уже используется как один из декорирующих элементов.");
         if (dateStartTask > dateEndTask)
             throw new Exception("Дата окончания должна быть больше даты начала");
 
         CheckCorrectStatusRepeat(oftenRepeat, dateStartTask, dateEndTask);
         DateStartTask = new DateTime(dateStartTask.Year, dateStartTask.Month, dateStartTask.Day, dateStartTask.Hour, dateStartTask.Minute, 0);
-        DateEndTask = new DateTime(dateEndTask.Year, dateEndTask.Month, dateEndTask.Day, dateEndTask.Hour, dateEndTask.Minute, 0);
+        DateEndTask = new DateTime(
+            dateEndTask.Year,
+            dateEndTask.Month,
+            dateEndTask.Day, 
+            dateEndTask.Hour,
+            dateEndTask.Minute, 0);
         OftenRepeat = oftenRepeat;
         Checked();
     }
