@@ -36,12 +36,10 @@ public class ExecutionDateTests
     {
         // Arrange
         Repeat repeat = Repeat.EveryWeek;
-        DateTime startDate = DateTime.ParseExact(string.Join(".", new string[]{ "10", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
-        DateTime endDate = DateTime.ParseExact(string.Join(".", new string[] { "16", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
 
         // Act
         ITask? basicTask = new BasicTask();
-        ExecutionDate executionDate = new( basicTask, repeat, startDate, endDate);
+        ExecutionDate executionDate = new( basicTask, repeat, StartDate, EndDate);
 
         // Assert
         Assert.AreEqual(DateTime.ParseExact("10.10.2050 14:30", "d.M.yyyy HH:mm", null), executionDate.DateStartTask);
@@ -68,7 +66,7 @@ public class ExecutionDateTests
     {
         // Arrange
         Repeat repeat = Repeat.None;
-        DateTime IncorrectStartDate = DateTime.ParseExact(string.Join(".", new string[] { "17", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
+        DateTime IncorrectStartDate = DateTime.ParseExact("17.10.2050 15:30", "d.M.yyyy HH:mm", null);
 
         // Act & Assert
         ITask? basicTask = new BasicTask();
@@ -80,7 +78,7 @@ public class ExecutionDateTests
     {
         // Arrange
         Repeat repeat = Repeat.None;
-        DateTime IncorrectEndDate = DateTime.ParseExact(string.Join(".", new string[] { "09", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
+        DateTime IncorrectEndDate = DateTime.ParseExact("09.10.2050 15:30", "d.M.yyyy HH:mm", null);
 
         // Act & Assert
         ITask? basicTask = new BasicTask();
@@ -93,7 +91,7 @@ public class ExecutionDateTests
         // Arrange
         Repeat repeat = Repeat.None;
         ITask? basicTask = new BasicTask();
-        DateTime IncorrectEndDate = DateTime.ParseExact(string.Join(".", new string[] { "09", "09", "2012", "15", "30" }), "d.M.yyyy.HH.mm", null);
+        DateTime IncorrectEndDate = DateTime.ParseExact("09.09.2012 15:30", "d.M.yyyy HH:mm", null);
 
         // Act & Assert
         Assert.ThrowsException<Exception>(() => new ExecutionDate( basicTask, repeat, StartDate, IncorrectEndDate));
@@ -107,7 +105,7 @@ public class ExecutionDateTests
         // Arrange
         ITask? basicTask = new BasicTask();
         ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
-        DateTime newStartDate = DateTime.ParseExact(string.Join(".", new string[] { "15", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
+        DateTime newStartDate = DateTime.ParseExact("15.10.2050 14:30", "d.M.yyyy HH:mm", null);
 
         // Act
         executionDate.ChangeDateStart(newStartDate);
@@ -122,7 +120,7 @@ public class ExecutionDateTests
         // Arrange
         ITask? basicTask = new BasicTask();
         ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
-        DateTime newEndDate = DateTime.ParseExact(string.Join(".", new string[] { "30", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
+        DateTime newEndDate = DateTime.ParseExact("30.10.2050 15:30", "d.M.yyyy HH:mm", null);
 
         // Act
         executionDate.ChangeDateEnd(newEndDate);
@@ -154,7 +152,7 @@ public class ExecutionDateTests
         // Arrange
         ITask? basicTask = new BasicTask();
         ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
-        DateTime newStartDate = DateTime.ParseExact(string.Join(".", new string[] { "18", "10", "2050", "14", "30" }), "d.M.yyyy.HH.mm", null);
+        DateTime newStartDate = DateTime.ParseExact("18.10.2050 14:30", "d.M.yyyy HH:mm", null);
 
         // Act & Assert
         Assert.ThrowsException<Exception>(() => executionDate.ChangeDateStart(newStartDate));
@@ -166,7 +164,7 @@ public class ExecutionDateTests
         // Arrange
         ITask? basicTask = new BasicTask();
         ExecutionDate executionDate = new( basicTask, Repeat.None, StartDate, EndDate);
-        DateTime newEndDate = DateTime.ParseExact(string.Join(".", new string[] { "9", "10", "2050", "15", "30" }), "d.M.yyyy.HH.mm", null);
+        DateTime newEndDate = DateTime.ParseExact("09.10.2050 15:30", "d.M.yyyy HH:mm", null);
 
         // Act & Assert
         Assert.ThrowsException<Exception>(() => executionDate.ChangeDateEnd(newEndDate));
