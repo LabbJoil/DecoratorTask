@@ -1,8 +1,5 @@
 ﻿using DecoratorTask.Enums;
 using DecoratorTask.Interfaces;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace DecoratorTask.Entities;
 
