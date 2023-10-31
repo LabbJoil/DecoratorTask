@@ -108,8 +108,8 @@ public class ExecutionDate : TaskEnhancer
                 break;
 
             case Repeat.EveryMonth:
-                if ((dateEnd - dateStart).TotalDays > DateTime.DaysInMonth(dateStart.Year, dateStart.Month))
-                    throw new Exception("Продолжительность задачи должна быть меньше или равна месяцу");
+                if ((dateEnd - dateStart).TotalDays > 31)
+                    throw new Exception("Продолжительность задачи должна быть меньше или равна 31 дню");
                 break;
 
             case Repeat.EveryYear:
@@ -133,30 +133,33 @@ public class ExecutionDate : TaskEnhancer
         switch (OftenRepeat)
         {
             case Repeat.EveryDay:
-                int addDay = (baseDate.TimeOfDay > DateStartTask.TimeOfDay) ? 0 : 1;
+                int addDay = (baseDate.TimeOfDay < DateStartTask.TimeOfDay) ? 0 : 1;
                 nextDateStartTask = baseDate.AddDays(addDay);
-                nextDateEndTask = baseDate.AddDays(addDay);
+                nextDateEndTask = nextDateStartTask.AddDays(DateEndTask.Day - DateStartTask.Day);
                 break;
 
             case Repeat.EveryWeek:
                 int mainDay = (baseDate.DayOfWeek < DateStartTask.DayOfWeek) ? 0 : 7;
                 nextDateStartTask = baseDate.AddDays(mainDay - (int)baseDate.DayOfWeek + (int)DateStartTask.DayOfWeek);
-                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
+                nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
                 break;
 
             case Repeat.EveryMonth:
                 int addMonth = (baseDate.Day < DateStartTask.Day) ? 0 : 1;
-                baseDate = baseDate.AddMonths(addMonth);
-                nextDateStartTask = new DateTime(baseDate.Year, baseDate.Month, 1);
-                nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
+                DateTime nextDateStart = baseDate.AddMonths(addMonth);
+                nextDateStartTask = new DateTime(nextDateStart.Year, nextDateStart.Month, 1)
+                    .AddDays(DateStartTask.Day - 1);
                 nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
                 break;
 
             case Repeat.EveryYear:
                 int addYear = (baseDate.DayOfYear < DateStartTask.DayOfYear) ? 0 : 1;
-                nextDateStartTask = new DateTime(baseDate.AddYears(addYear).Year, DateStartTask.Month, 1);
-                nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
-                nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
+                nextDateStartTask = new DateTime(baseDate.AddYears(addYear).Year, DateStartTask.Month, 1)
+                    .AddDays(DateStartTask.Day - 1);
+                int countDaysAdd = (int)Math.Ceiling((DateEndTask - DateStartTask).TotalDays);
+                nextDateEndTask = nextDateStartTask.AddDays(countDaysAdd);
+                if (countDaysAdd > 365)
+                    nextDateEndTask = nextDateEndTask.AddDays(-1);
                 break;
 
             default:
