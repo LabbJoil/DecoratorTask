@@ -141,12 +141,13 @@ public class ExecutionDate : TaskEnhancer
             case Repeat.EveryWeek:
                 int mainDay = (baseDate.DayOfWeek < DateStartTask.DayOfWeek) ? 0 : 7;
                 nextDateStartTask = baseDate.AddDays(mainDay - (int)baseDate.DayOfWeek + (int)DateStartTask.DayOfWeek);
-                nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
+                nextDateEndTask = nextDateStartTask.AddDays((DateEndTask - DateStartTask).Days);
                 break;
 
             case Repeat.EveryMonth:
                 int addMonth = (baseDate.Day < DateStartTask.Day) ? 0 : 1;
-                nextDateStartTask = new DateTime(baseDate.Year, baseDate.AddMonths(addMonth).Month, 1);
+                baseDate = baseDate.AddMonths(addMonth);
+                nextDateStartTask = new DateTime(baseDate.Year, baseDate.Month, 1);
                 nextDateStartTask = nextDateStartTask.AddDays(DateStartTask.Day - 1);
                 nextDateEndTask = nextDateStartTask.AddDays(Math.Ceiling((DateEndTask - DateStartTask).TotalDays));
                 break;
